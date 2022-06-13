@@ -1,5 +1,5 @@
 use uuid::Uuid;
-use {{ tmplr.project_name | snake_case }}::domain::sample_model::Sample;
+use file_scanner::domain::sample_model::Sample;
 
 use crate::helper::spawn_app;
 
