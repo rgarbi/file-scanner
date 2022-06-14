@@ -1,8 +1,7 @@
 use actix_web::{web, HttpResponse, Responder};
-use actix_web::web::Buf;
 use chrono::Utc;
 use data_encoding::HEXUPPER;
-use futures_util::StreamExt;
+use futures_util::{StreamExt};
 use ring::digest::{Context, Digest, SHA256};
 use sqlx::PgPool;
 use tokio::io::{AsyncWriteExt, AsyncReadExt};
@@ -13,18 +12,16 @@ use crate::db::sample_broker::insert_scan;
 use crate::domain::file_scan_model::{FileScan, ScanStatus};
 
 
-#[tracing::instrument(
-name = "Post a file to scan",
-skip(body, pool),
-)]
-pub async fn scan_file(mut body: web::Payload, pool: web::Data<PgPool>) -> impl Responder {
+#[tracing::instrument(name = "Post a file to scan", skip(payload, pool))]
+pub async fn scan_file(mut payload: web::Payload, pool: web::Data<PgPool>) -> impl Responder {
     let filename = Uuid::new_v4().to_string();
     let filepath = format!("./tmp/{}", filename);
     let mut file = File::create(filepath.clone()).await.unwrap();
 
-    while let Some(item) = body.next().await {
-        let chunk = item.unwrap();
-        file.write(&*chunk.chunk()).await.unwrap();
+    while let Some(chunk) = payload.next().await {
+        let chunk = chunk.unwrap();
+        println!("Chunk: {:?}", &chunk);
+        file.write_all(&chunk).await.unwrap();
     }
 
     let file_hash = hash_a_file(filepath.clone()).await;
