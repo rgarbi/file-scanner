@@ -13,6 +13,7 @@ pub struct FileScan {
     pub status: ScanStatus,
 }
 
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub enum ScanStatus {
     Pending,
     Scanning,
