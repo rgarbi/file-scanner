@@ -3,8 +3,8 @@ use crate::domain::file_scan_model::{FileScan};
 
 
 #[tracing::instrument(
-    name = "Saving new sample",
-    skip(file_scan, _pool)
+name = "Saving new sample",
+skip(file_scan, _pool)
 )]
 pub async fn insert_scan(
     file_scan: FileScan,
@@ -27,7 +27,7 @@ pub async fn insert_scan(
     //        e
     //    })?;
 
-    Ok(sample.id.to_string())
+    Ok(file_scan.id.to_string())
 }
 
 
