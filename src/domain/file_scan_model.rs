@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct FileScan {
     pub id: Uuid,
     pub file_name: String,
@@ -18,7 +18,7 @@ pub enum ScanStatus {
     Scanning,
     Error,
     DoneClean,
-    DoneBadFile
+    DoneBadFile,
 }
 
 impl FileScan {

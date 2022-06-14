@@ -1,34 +1,33 @@
-use std::fs::File;
-use std::io::{BufReader, Read, Write};
 use actix_web::{web, HttpResponse, Responder};
+use actix_web::web::Buf;
 use chrono::Utc;
 use data_encoding::HEXUPPER;
 use futures_util::StreamExt;
 use ring::digest::{Context, Digest, SHA256};
 use sqlx::PgPool;
+use tokio::io::{AsyncWriteExt, AsyncReadExt};
+use tokio::fs::File;
 use uuid::Uuid;
 
-use crate::db::sample_broker::insert_user;
-use crate::domain::file_scan_model::{FileScan, Sample, ScanStatus};
+use crate::db::sample_broker::insert_scan;
+use crate::domain::file_scan_model::{FileScan, ScanStatus};
 
 
 #[tracing::instrument(
 name = "Post a file to scan",
-skip(body, _pool),
+skip(body, pool),
 )]
-pub async fn scan_file(mut body: web::Payload, _pool: web::Data<PgPool>) -> impl Responder {
+pub async fn scan_file(mut body: web::Payload, pool: web::Data<PgPool>) -> impl Responder {
     let filename = Uuid::new_v4().to_string();
     let filepath = format!("./tmp/{}", filename);
-    while let Some(item) = body.next().await {
-        let mut f = web::block(|| std::fs::File::create(filepath.clone())).await??;
+    let mut file = File::create(filepath.clone()).await.unwrap();
 
-        while let Some(chunk) = field.try_next().await? {
-            f = web::block(move || f.write_all(&chunk).map(|_| f)).await??;
-        }
+    while let Some(item) = body.next().await {
+        let chunk = item.unwrap();
+        file.write(&*chunk.chunk()).await.unwrap();
     }
 
-    let file_hash = hash_a_file(filepath.clone());
-
+    let file_hash = hash_a_file(filepath.clone()).await;
     let file_scan = FileScan {
         id: Uuid::new_v4(),
         file_name: filename.clone(),
@@ -36,32 +35,34 @@ pub async fn scan_file(mut body: web::Payload, _pool: web::Data<PgPool>) -> impl
         file_hash,
         posted_on: Utc::now(),
         last_updated: Utc::now(),
-        status: ScanStatus::Pending
+        status: ScanStatus::Pending,
     };
 
-    Ok(HttpResponse::Ok().json(file_scan))
+    match insert_scan(file_scan.clone(), &pool).await {
+        Ok(_) => return HttpResponse::Ok().json(file_scan.clone()),
+        Err(_) => return HttpResponse::InternalServerError().finish()
+    }
 }
 
-fn hash_a_file(path: String) -> String {
-    let input = File::open(path)?;
-    let reader = BufReader::new(input);
-    let digest = sha256_digest(reader)?;
+async fn hash_a_file(path: String) -> String {
+    let input = File::open(path).await.unwrap();
+
+    let digest = sha256_digest(input).await;
 
     HEXUPPER.encode(digest.as_ref())
 }
 
-//pulled from: https://rust-lang-nursery.github.io/rust-cookbook/cryptography/hashing.html
-fn sha256_digest<R: Read>(mut reader: R) -> Result<Digest, E> {
+async fn sha256_digest(mut file: File) -> Digest {
     let mut context = Context::new(&SHA256);
     let mut buffer = [0; 1024];
 
     loop {
-        let count = reader.read(&mut buffer)?;
+        let count = file.read(&mut buffer).await.unwrap();
         if count == 0 {
             break;
         }
         context.update(&buffer[..count]);
     }
 
-    Ok(context.finish())
+    context.finish()
 }
