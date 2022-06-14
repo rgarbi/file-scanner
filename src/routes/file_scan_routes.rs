@@ -20,7 +20,6 @@ pub async fn scan_file(mut payload: web::Payload, pool: web::Data<PgPool>) -> im
 
     while let Some(chunk) = payload.next().await {
         let chunk = chunk.unwrap();
-        println!("Chunk: {:?}", &chunk);
         file.write_all(&chunk).await.unwrap();
     }
 
