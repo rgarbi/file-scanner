@@ -1,5 +1,5 @@
 pub use health_check::*;
-pub use sample_routes::*;
+pub use file_scan_routes::*;
 
 pub mod health_check;
-pub mod sample_routes;
+pub mod file_scan_routes;

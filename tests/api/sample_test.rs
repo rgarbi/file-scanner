@@ -1,5 +1,5 @@
 use uuid::Uuid;
-use file_scanner::domain::sample_model::Sample;
+use file_scanner::domain::file_scan_model::Sample;
 
 use crate::helper::spawn_app;
 

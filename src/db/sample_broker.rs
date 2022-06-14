@@ -1,5 +1,5 @@
 use sqlx::{Error, PgPool};
-use crate::domain::sample_model::Sample;
+use crate::domain::file_scan_model::Sample;
 
 
 #[tracing::instrument(
