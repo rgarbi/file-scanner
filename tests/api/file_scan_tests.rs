@@ -1,6 +1,3 @@
-use uuid::Uuid;
-use file_scanner::domain::file_scan_model::Sample;
-
 use crate::helper::spawn_app;
 
 #[tokio::test]
@@ -14,5 +11,5 @@ async fn post_sample_works() {
 
     // Assert
     assert!(&response.status().is_success());
-    println!("Response: {:?}", response.unwrap())
+    println!("Response: {:?}", response.text().await.unwrap())
 }
