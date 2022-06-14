@@ -1,13 +1,13 @@
 use sqlx::{Error, PgPool};
-use crate::domain::file_scan_model::Sample;
+use crate::domain::file_scan_model::{FileScan, Sample};
 
 
 #[tracing::instrument(
     name = "Saving new sample",
-    skip(sample, _pool)
+    skip(file_scan, _pool)
 )]
-pub async fn insert_user(
-    sample: Sample,
+pub async fn insert_scan(
+    file_scan: FileScan,
     _pool: &PgPool,
 ) -> Result<String, Error> {
     // Commenting out so that we dop not have to create a fake migration

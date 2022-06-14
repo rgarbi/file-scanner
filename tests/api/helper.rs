@@ -29,10 +29,10 @@ pub struct TestApp {
 }
 
 impl TestApp {
-    pub async fn post_sample(&self, body: String) -> Response {
+    pub async fn post_scan(&self, body: Vec<u8>) -> Response {
         reqwest::Client::new()
-            .post(&format!("{}/samples", &self.address))
-            .header("Content-Type", "application/json")
+            .post(&format!("{}/file_scanner", &self.address))
+            .header("Content-Type", "application/octet-stream")
             .body(body)
             .send()
             .await

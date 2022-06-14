@@ -1,4 +1,4 @@
 mod health_check;
 mod helper;
-mod sample_test;
+mod file_scan_tests;
 
