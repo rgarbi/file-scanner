@@ -7,6 +7,7 @@ pub struct FileScan {
     pub id: Uuid,
     pub file_name: String,
     pub file_location: String,
+    pub file_hash: String,
     pub posted_on: DateTime<Utc>,
     pub last_updated: DateTime<Utc>,
     pub status: ScanStatus,
