@@ -13,6 +13,7 @@ pub struct Settings {
     pub application: ApplicationSettings,
     pub auth_config: AuthConfig,
     pub email_client: EmailClientSettings,
+    pub scan_settings: ScanSettings,
 }
 
 #[derive(serde::Deserialize, Clone)]
@@ -54,7 +55,6 @@ pub struct EmailClientSettings {
 pub struct ScanSettings {
     pub download_dir: String,
 }
-
 
 
 impl EmailClientSettings {

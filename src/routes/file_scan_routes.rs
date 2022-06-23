@@ -7,6 +7,7 @@ use sqlx::PgPool;
 use tokio::io::{AsyncWriteExt, AsyncReadExt};
 use tokio::fs::File;
 use uuid::Uuid;
+use crate::configuration::get_configuration;
 
 use crate::db::sample_broker::insert_scan;
 use crate::domain::file_scan_model::{FileScan, ScanStatus};
@@ -15,7 +16,8 @@ use crate::domain::file_scan_model::{FileScan, ScanStatus};
 #[tracing::instrument(name = "Post a file to scan", skip(payload, pool))]
 pub async fn scan_file(mut payload: web::Payload, pool: web::Data<PgPool>) -> impl Responder {
     let filename = Uuid::new_v4().to_string();
-    let filepath = format!("./tmp/{}", filename);
+    let scan_config = get_configuration().unwrap().scan_settings;
+    let filepath = format!("{}/{}", scan_config.download_dir, filename);
     let mut file = File::create(filepath.clone()).await.unwrap();
 
     while let Some(chunk) = payload.next().await {
