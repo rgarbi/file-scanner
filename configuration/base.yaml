@@ -18,3 +18,5 @@ email_client:
   sender_email: "a_sender_email@somedomain.com"
   api_key: "something"
   timeout_milliseconds: 10000
+scan_settings:
+  download_dir: "./tmp"

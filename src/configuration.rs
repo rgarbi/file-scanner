@@ -50,6 +50,13 @@ pub struct EmailClientSettings {
     pub timeout_milliseconds: u64,
 }
 
+#[derive(serde::Deserialize, Clone)]
+pub struct ScanSettings {
+    pub download_dir: String,
+}
+
+
+
 impl EmailClientSettings {
     pub fn sender(&self) -> Result<ValidEmail, String> {
         ValidEmail::parse(self.sender_email.clone())
