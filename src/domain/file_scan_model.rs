@@ -79,36 +79,40 @@ impl FileScan {
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
     use crate::domain::file_scan_model::{FileScan, ScanStatus};
     use chrono::Utc;
+    use claim::assert_err;
     use uuid::Uuid;
 
     #[test]
     fn scan_status_to_and_from_str_test() {
         assert_eq!(
-            ScanStatus::from_str("Pending").as_str(),
+            ScanStatus::from_str("Pending").unwrap().as_str(),
             ScanStatus::Pending.as_str()
         );
         assert_eq!(
-            ScanStatus::from_str("Error").as_str(),
+            ScanStatus::from_str("Error").unwrap().as_str(),
             ScanStatus::Error.as_str()
         );
         assert_eq!(
-            ScanStatus::from_str("Scanning").as_str(),
+            ScanStatus::from_str("Scanning").unwrap().as_str(),
             ScanStatus::Scanning.as_str()
         );
         assert_eq!(
-            ScanStatus::from_str("Hashing").as_str(),
+            ScanStatus::from_str("Hashing").unwrap().as_str(),
             ScanStatus::Hashing.as_str()
         );
         assert_eq!(
-            ScanStatus::from_str("DoneBadFile").as_str(),
+            ScanStatus::from_str("DoneBadFile").unwrap().as_str(),
             ScanStatus::DoneBadFile.as_str()
         );
         assert_eq!(
-            ScanStatus::from_str("DoneClean").as_str(),
+            ScanStatus::from_str("DoneClean").unwrap().as_str(),
             ScanStatus::DoneClean.as_str()
         );
+
+        assert_err!(ScanStatus::from_str(Uuid::new_v4().to_string().as_str()));
     }
 
     #[test]
