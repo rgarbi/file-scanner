@@ -14,7 +14,7 @@ pub struct FileScan {
     pub last_updated: DateTime<Utc>,
     pub status: ScanStatus,
     pub being_worked: bool,
-    pub work_started: DateTime<Utc>,
+    pub work_started: i64,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
@@ -127,6 +127,8 @@ mod tests {
             posted_on: Utc::now(),
             last_updated: Utc::now(),
             status: ScanStatus::Pending,
+            being_worked: false,
+            work_started: 0
         };
         let _json = file_scan.to_json();
     }
