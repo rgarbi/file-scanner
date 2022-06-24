@@ -13,6 +13,8 @@ pub struct FileScan {
     pub posted_on: DateTime<Utc>,
     pub last_updated: DateTime<Utc>,
     pub status: ScanStatus,
+    pub being_worked: bool,
+    pub work_started: DateTime<Utc>,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
