@@ -9,7 +9,7 @@ use tokio::fs::File;
 use uuid::Uuid;
 use crate::configuration::get_configuration;
 
-use crate::db::sample_broker::insert_scan;
+use crate::db::file_scan_broker::insert_scan;
 use crate::domain::file_scan_model::{FileScan, ScanStatus};
 
 

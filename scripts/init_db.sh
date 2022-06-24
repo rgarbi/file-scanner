@@ -17,7 +17,7 @@ fi
 
 DB_USER=${POSTGRES_USER:=postgres}
 DB_PASSWORD="${POSTGRES_PASSWORD:=password}"
-DB_NAME="${POSTGRES_DB:=file-scanner-service}"
+DB_NAME="${POSTGRES_DB:=file-scanner}"
 DB_PORT="${POSTGRES_PORT:=5432}"
 # Launch postgres using Docker
 if [[ -z "${SKIP_DOCKER}" || $(psql -h "localhost" -U "${DB_USER}" -p "${DB_PORT}" -d "postgres" -c '\q';) ]]
