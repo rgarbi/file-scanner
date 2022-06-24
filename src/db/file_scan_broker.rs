@@ -1,16 +1,9 @@
+use crate::domain::file_scan_model::FileScan;
 use sqlx::{Error, PgPool};
 use uuid::Uuid;
-use crate::domain::file_scan_model::{FileScan};
 
-
-#[tracing::instrument(
-    name = "Saving new file scan",
-    skip(file_scan, pool)
-)]
-pub async fn insert_scan(
-    file_scan: FileScan,
-    pool: &PgPool,
-) -> Result<Uuid, Error> {
+#[tracing::instrument(name = "Saving new file scan", skip(file_scan, pool))]
+pub async fn insert_scan(file_scan: FileScan, pool: &PgPool) -> Result<Uuid, Error> {
     sqlx::query!(
         r#"INSERT
             INTO file_scan (id, file_name, file_location, file_hash, posted_on, last_updated, status)
@@ -31,7 +24,3 @@ pub async fn insert_scan(
 
     Ok(file_scan.id)
 }
-
-
-
-

@@ -1,0 +1,21 @@
+{
+  "db": "PostgreSQL",
+  "2e012e55979fef2cf65b6a126bb312d98c905b37a329a2267f0070202f317af8": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Uuid",
+          "Text",
+          "Text",
+          "Text",
+          "Timestamptz",
+          "Timestamptz",
+          "Text"
+        ]
+      }
+    },
+    "query": "INSERT\n            INTO file_scan (id, file_name, file_location, file_hash, posted_on, last_updated, status)\n            VALUES ($1, $2, $3, $4, $5, $6, $7)"
+  }
+}

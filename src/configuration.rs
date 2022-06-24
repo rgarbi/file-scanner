@@ -56,7 +56,6 @@ pub struct ScanSettings {
     pub download_dir: String,
 }
 
-
 impl EmailClientSettings {
     pub fn sender(&self) -> Result<ValidEmail, String> {
         ValidEmail::parse(self.sender_email.clone())

@@ -1,17 +1,16 @@
+use crate::configuration::get_configuration;
 use actix_web::{web, HttpResponse, Responder};
 use chrono::Utc;
 use data_encoding::HEXUPPER;
-use futures_util::{StreamExt};
+use futures_util::StreamExt;
 use ring::digest::{Context, Digest, SHA256};
 use sqlx::PgPool;
-use tokio::io::{AsyncWriteExt, AsyncReadExt};
 use tokio::fs::File;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use uuid::Uuid;
-use crate::configuration::get_configuration;
 
 use crate::db::file_scan_broker::insert_scan;
 use crate::domain::file_scan_model::{FileScan, ScanStatus};
-
 
 #[tracing::instrument(name = "Post a file to scan", skip(payload, pool))]
 pub async fn scan_file(mut payload: web::Payload, pool: web::Data<PgPool>) -> impl Responder {
@@ -38,7 +37,7 @@ pub async fn scan_file(mut payload: web::Payload, pool: web::Data<PgPool>) -> im
 
     match insert_scan(file_scan.clone(), &pool).await {
         Ok(_) => return HttpResponse::Ok().json(file_scan.clone()),
-        Err(_) => return HttpResponse::InternalServerError().finish()
+        Err(_) => return HttpResponse::InternalServerError().finish(),
     }
 }
 

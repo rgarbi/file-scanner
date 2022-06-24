@@ -114,7 +114,6 @@ pub fn run(
             .route("/file_scanner", web::post().to(routes::scan_file))
             .app_data(connection.clone())
             .app_data(email_client.clone())
-
     })
     .listen(listener)?
     .run();

@@ -1,3 +1,4 @@
+use std::str::FromStr;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use tracing::error;
@@ -24,6 +25,39 @@ pub enum ScanStatus {
     DoneBadFile,
 }
 
+impl FromStr for ScanStatus {
+    type Err = ();
+
+    fn from_str(val: &str) -> Result<Self, Self::Err> {
+        if val.eq("Pending") {
+            return Ok(ScanStatus::Pending);
+        }
+
+        if val.eq("Hashing") {
+            return Ok(ScanStatus::Hashing);
+        }
+
+        if val.eq("Scanning") {
+            return Ok(ScanStatus::Scanning);
+        }
+
+        if val.eq("Error") {
+            return Ok(ScanStatus::Error);
+        }
+
+        if val.eq("DoneClean") {
+            return Ok(ScanStatus::DoneClean);
+        }
+
+        if val.eq("DoneBadFile") {
+            return Ok(ScanStatus::DoneBadFile);
+        }
+
+        error!("Could not map string: {} to the enum SubscriptionType", val);
+        Err(())
+    }
+}
+
 impl ScanStatus {
     pub fn as_str(&self) -> &'static str {
         match self {
@@ -35,35 +69,6 @@ impl ScanStatus {
             ScanStatus::DoneBadFile => "DoneBadFile",
         }
     }
-
-    pub fn from_str(val: &str) -> ScanStatus {
-        if val.eq("Pending") {
-            return ScanStatus::Pending;
-        }
-
-        if val.eq("Hashing") {
-            return ScanStatus::Hashing;
-        }
-
-        if val.eq("Scanning") {
-            return ScanStatus::Scanning;
-        }
-
-        if val.eq("Error") {
-            return ScanStatus::Error;
-        }
-
-        if val.eq("DoneClean") {
-            return ScanStatus::DoneClean;
-        }
-
-        if val.eq("DoneBadFile") {
-            return ScanStatus::DoneBadFile;
-        }
-
-        error!("Could not map string: {} to the enum SubscriptionType", val);
-        ScanStatus::Error
-    }
 }
 
 impl FileScan {
@@ -74,18 +79,36 @@ impl FileScan {
 
 #[cfg(test)]
 mod tests {
+    use crate::domain::file_scan_model::{FileScan, ScanStatus};
     use chrono::Utc;
     use uuid::Uuid;
-    use crate::domain::file_scan_model::{FileScan, ScanStatus};
 
     #[test]
     fn scan_status_to_and_from_str_test() {
-        assert_eq!(ScanStatus::from_str("Pending").as_str(), ScanStatus::Pending.as_str());
-        assert_eq!(ScanStatus::from_str("Error").as_str(), ScanStatus::Error.as_str());
-        assert_eq!(ScanStatus::from_str("Scanning").as_str(), ScanStatus::Scanning.as_str());
-        assert_eq!(ScanStatus::from_str("Hashing").as_str(), ScanStatus::Hashing.as_str());
-        assert_eq!(ScanStatus::from_str("DoneBadFile").as_str(), ScanStatus::DoneBadFile.as_str());
-        assert_eq!(ScanStatus::from_str("DoneClean").as_str(), ScanStatus::DoneClean.as_str());
+        assert_eq!(
+            ScanStatus::from_str("Pending").as_str(),
+            ScanStatus::Pending.as_str()
+        );
+        assert_eq!(
+            ScanStatus::from_str("Error").as_str(),
+            ScanStatus::Error.as_str()
+        );
+        assert_eq!(
+            ScanStatus::from_str("Scanning").as_str(),
+            ScanStatus::Scanning.as_str()
+        );
+        assert_eq!(
+            ScanStatus::from_str("Hashing").as_str(),
+            ScanStatus::Hashing.as_str()
+        );
+        assert_eq!(
+            ScanStatus::from_str("DoneBadFile").as_str(),
+            ScanStatus::DoneBadFile.as_str()
+        );
+        assert_eq!(
+            ScanStatus::from_str("DoneClean").as_str(),
+            ScanStatus::DoneClean.as_str()
+        );
     }
 
     #[test]
@@ -97,7 +120,7 @@ mod tests {
             file_hash: Uuid::new_v4().to_string(),
             posted_on: Utc::now(),
             last_updated: Utc::now(),
-            status: ScanStatus::Pending
+            status: ScanStatus::Pending,
         };
         let _json = file_scan.to_json();
     }

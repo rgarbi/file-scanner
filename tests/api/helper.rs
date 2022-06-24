@@ -5,7 +5,7 @@ use sqlx::{Connection, Executor, PgConnection, PgPool};
 use uuid::Uuid;
 use wiremock::MockServer;
 
-use file_scanner::configuration::{DatabaseSettings, get_configuration};
+use file_scanner::configuration::{get_configuration, DatabaseSettings};
 use file_scanner::startup::Application;
 use file_scanner::telemetry::{get_subscriber, init_subscriber};
 
