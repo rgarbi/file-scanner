@@ -1,6 +1,6 @@
 {
   "db": "PostgreSQL",
-  "2e012e55979fef2cf65b6a126bb312d98c905b37a329a2267f0070202f317af8": {
+  "aae1b91927b052d7d03c99f12b4d71a19007736d56c511714e0e8aa9029c87e9": {
     "describe": {
       "columns": [],
       "nullable": [],
@@ -12,10 +12,12 @@
           "Text",
           "Timestamptz",
           "Timestamptz",
-          "Text"
+          "Text",
+          "Bool",
+          "Int8"
         ]
       }
     },
-    "query": "INSERT\n            INTO file_scan (id, file_name, file_location, file_hash, posted_on, last_updated, status)\n            VALUES ($1, $2, $3, $4, $5, $6, $7)"
+    "query": "INSERT\n            INTO file_scan (id, file_name, file_location, file_hash, posted_on, last_updated, status, being_worked, work_started)\n            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)"
   }
 }

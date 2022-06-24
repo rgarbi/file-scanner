@@ -128,7 +128,7 @@ mod tests {
             last_updated: Utc::now(),
             status: ScanStatus::Pending,
             being_worked: false,
-            work_started: 0
+            work_started: 0,
         };
         let _json = file_scan.to_json();
     }
