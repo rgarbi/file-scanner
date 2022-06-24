@@ -35,10 +35,10 @@ pub async fn scan_file(mut payload: web::Payload, pool: web::Data<PgPool>) -> im
         status: ScanStatus::Pending,
     };
 
-    match insert_scan(file_scan.clone(), &pool).await {
-        Ok(_) => return HttpResponse::Ok().json(file_scan.clone()),
-        Err(_) => return HttpResponse::InternalServerError().finish(),
-    }
+    return match insert_scan(file_scan.clone(), &pool).await {
+        Ok(_) => HttpResponse::Ok().json(file_scan.clone()),
+        Err(_) => HttpResponse::InternalServerError().finish(),
+    };
 }
 
 async fn hash_a_file(path: String) -> String {

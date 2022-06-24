@@ -1,6 +1,6 @@
-use std::str::FromStr;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 use tracing::error;
 use uuid::Uuid;
 
@@ -79,10 +79,10 @@ impl FileScan {
 
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
     use crate::domain::file_scan_model::{FileScan, ScanStatus};
     use chrono::Utc;
     use claim::assert_err;
+    use std::str::FromStr;
     use uuid::Uuid;
 
     #[test]
