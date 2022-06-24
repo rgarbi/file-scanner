@@ -14,7 +14,7 @@ pub struct FileScan {
     pub status: ScanStatus,
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
 pub enum ScanStatus {
     Pending,
     Hashing,
@@ -36,7 +36,7 @@ impl ScanStatus {
         }
     }
 
-    pub fn from_str(val: String) -> ScanStatus {
+    pub fn from_str(val: &str) -> ScanStatus {
         if val.eq("Pending") {
             return ScanStatus::Pending;
         }
@@ -64,11 +64,41 @@ impl ScanStatus {
         error!("Could not map string: {} to the enum SubscriptionType", val);
         ScanStatus::Error
     }
-
 }
 
 impl FileScan {
     pub fn to_json(&self) -> String {
         serde_json::to_string(self).expect("Was not able to serialize.")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use chrono::Utc;
+    use uuid::Uuid;
+    use crate::domain::file_scan_model::{FileScan, ScanStatus};
+
+    #[test]
+    fn scan_status_to_and_from_str_test() {
+        assert_eq!(ScanStatus::from_str("Pending").as_str(), ScanStatus::Pending.as_str());
+        assert_eq!(ScanStatus::from_str("Error").as_str(), ScanStatus::Error.as_str());
+        assert_eq!(ScanStatus::from_str("Scanning").as_str(), ScanStatus::Scanning.as_str());
+        assert_eq!(ScanStatus::from_str("Hashing").as_str(), ScanStatus::Hashing.as_str());
+        assert_eq!(ScanStatus::from_str("DoneBadFile").as_str(), ScanStatus::DoneBadFile.as_str());
+        assert_eq!(ScanStatus::from_str("DoneClean").as_str(), ScanStatus::DoneClean.as_str());
+    }
+
+    #[test]
+    fn file_scan_to_json_works() {
+        let file_scan = FileScan {
+            id: Uuid::new_v4(),
+            file_name: Uuid::new_v4().to_string(),
+            file_location: Uuid::new_v4().to_string(),
+            file_hash: Uuid::new_v4().to_string(),
+            posted_on: Utc::now(),
+            last_updated: Utc::now(),
+            status: ScanStatus::Pending
+        };
+        let _json = file_scan.to_json();
     }
 }

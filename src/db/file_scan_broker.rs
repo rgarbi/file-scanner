@@ -21,7 +21,7 @@ pub async fn insert_scan(
         file_scan.file_hash,
         file_scan.posted_on,
         file_scan.last_updated,
-        file_scan.status.,
+        file_scan.status.as_str(),
     ).execute(pool)
        .await
        .map_err(|e: Error| {
