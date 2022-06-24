@@ -43,9 +43,7 @@ pub async fn scan_file(mut payload: web::Payload, pool: web::Data<PgPool>) -> im
 
 async fn hash_a_file(path: String) -> String {
     let input = File::open(path).await.unwrap();
-
     let digest = sha256_digest(input).await;
-
     HEXUPPER.encode(digest.as_ref())
 }
 
