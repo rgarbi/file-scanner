@@ -1,3 +1,4 @@
+use chrono::Utc;
 use once_cell::sync::Lazy;
 use reqwest::Response;
 use sqlx::postgres::PgPoolOptions;
@@ -6,6 +7,7 @@ use uuid::Uuid;
 use wiremock::MockServer;
 
 use file_scanner::configuration::{get_configuration, DatabaseSettings};
+use file_scanner::domain::file_scan_model::{FileScan, ScanStatus};
 use file_scanner::startup::Application;
 use file_scanner::telemetry::{get_subscriber, init_subscriber};
 
@@ -88,4 +90,19 @@ pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
         .await
         .expect("Failed to migrate the database");
     connection_pool
+}
+
+
+pub fn generate_file_scan() -> FileScan {
+    FileScan {
+        id: Uuid::new_v4(),
+        file_name: Uuid::new_v4().to_string(),
+        file_location: Uuid::new_v4().to_string(),
+        file_hash: Uuid::new_v4().to_string(),
+        posted_on: Utc::now(),
+        last_updated: Utc::now(),
+        status: ScanStatus::Pending,
+        being_worked: false,
+        work_started: None,
+    }
 }

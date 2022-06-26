@@ -1,0 +1,28 @@
+use claim::assert_ok;
+use file_scanner::db::file_scan_broker::{insert_scan, select_a_file_that_needs_hashing};
+use file_scanner::domain::file_scan_model::ScanStatus;
+use crate::helper::{generate_file_scan, spawn_app};
+
+
+#[tokio::test]
+async fn insert_scan_works() {
+    let app = spawn_app().await;
+
+    let file_scan = generate_file_scan();
+    assert_ok!(insert_scan(file_scan, &app.db_pool).await);
+}
+
+
+#[tokio::test]
+async fn select_a_file_that_needs_hashing_works() {
+    let app = spawn_app().await;
+
+    let mut file_scan = generate_file_scan();
+    file_scan.status = ScanStatus::Pending;
+    assert_ok!(insert_scan(file_scan, &app.db_pool).await);
+
+    let returned = select_a_file_that_needs_hashing(&app.db_pool).await;
+    assert_ok!(&returned);
+
+    assert_eq!(file_scan.id, returned.unwrap().id);
+}
