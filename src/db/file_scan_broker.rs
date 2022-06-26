@@ -30,7 +30,7 @@ pub async fn insert_scan(file_scan: FileScan, pool: &PgPool) -> Result<Uuid, Err
 }
 
 #[tracing::instrument(name = "Select a file that needs hashing", skip(pool))]
-pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<FileScan, Error> {
+pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<Option<FileScan>, Error> {
     let result = sqlx::query!(
         r#"SELECT id, file_name, file_location, file_hash, posted_on, last_updated, status, being_worked, work_started
             FROM file_scan
@@ -40,13 +40,13 @@ pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<FileScan,
         .await
         .map_err(|e: Error| {
             if e == Err(RowNotFound) {
-                return Ok(())
+                return Ok(None);
             }
             tracing::error!("{:?}", e);
             e
         })?;
 
-    Ok(FileScan {
+    Ok(Some(FileScan {
         id: result.id,
         file_name: result.file_name,
         file_location: result.file_location,
@@ -56,5 +56,5 @@ pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<FileScan,
         status: ScanStatus::from_str(result.status.as_str()).unwrap(),
         being_worked: result.being_worked,
         work_started: result.work_started,
-    })
+    }))
 }
