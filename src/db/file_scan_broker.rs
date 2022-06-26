@@ -2,6 +2,7 @@ use crate::domain::file_scan_model::{FileScan, ScanStatus};
 use sqlx::{Error, PgPool};
 use uuid::Uuid;
 use std::str::FromStr;
+use sqlx::Error::RowNotFound;
 
 #[tracing::instrument(name = "Saving new file scan", skip(file_scan, pool))]
 pub async fn insert_scan(file_scan: FileScan, pool: &PgPool) -> Result<Uuid, Error> {
@@ -38,6 +39,9 @@ pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<FileScan,
     ).fetch_one(pool)
         .await
         .map_err(|e: Error| {
+            if e == Err(RowNotFound) {
+                return Ok(())
+            }
             tracing::error!("{:?}", e);
             e
         })?;
