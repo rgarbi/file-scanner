@@ -1,5 +1,73 @@
 {
   "db": "PostgreSQL",
+  "0cf42e40fe3b9756c37211a0a3ea07ce218a99fdd06c5e00c27fd6d8df88811a": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "file_name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "file_location",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "file_hash",
+          "ordinal": 3,
+          "type_info": "Text"
+        },
+        {
+          "name": "posted_on",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "last_updated",
+          "ordinal": 5,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "status",
+          "ordinal": 6,
+          "type_info": "Text"
+        },
+        {
+          "name": "being_worked",
+          "ordinal": 7,
+          "type_info": "Bool"
+        },
+        {
+          "name": "work_started",
+          "ordinal": 8,
+          "type_info": "Int8"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "SELECT id, file_name, file_location, file_hash, posted_on, last_updated, status, being_worked, work_started\n            FROM file_scan\n            WHERE status = $1"
+  },
   "aae1b91927b052d7d03c99f12b4d71a19007736d56c511714e0e8aa9029c87e9": {
     "describe": {
       "columns": [],

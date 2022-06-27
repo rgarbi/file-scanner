@@ -1,8 +1,7 @@
+use crate::helper::{generate_file_scan, spawn_app};
 use claim::{assert_err, assert_none, assert_ok, assert_some};
 use file_scanner::db::file_scan_broker::{insert_scan, select_a_file_that_needs_hashing};
 use file_scanner::domain::file_scan_model::ScanStatus;
-use crate::helper::{generate_file_scan, spawn_app};
-
 
 #[tokio::test]
 async fn insert_scan_works() {
@@ -25,7 +24,6 @@ async fn insert_scan_errors() {
     let file_scan = generate_file_scan();
     assert_err!(insert_scan(file_scan, &app.db_pool).await);
 }
-
 
 #[tokio::test]
 async fn select_a_file_that_needs_hashing_works() {

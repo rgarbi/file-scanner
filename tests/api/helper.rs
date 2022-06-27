@@ -92,7 +92,6 @@ pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
     connection_pool
 }
 
-
 pub fn generate_file_scan() -> FileScan {
     FileScan {
         id: Uuid::new_v4(),
