@@ -31,9 +31,10 @@ pub async fn insert_scan(file_scan: FileScan, pool: &PgPool) -> Result<Uuid, Err
 #[tracing::instrument(name = "Select a file that needs hashing", skip(pool))]
 pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<Option<FileScan>, Error> {
     let result = sqlx::query!(
-        r#"SELECT id, file_name, file_location, file_hash, posted_on, last_updated, status, being_worked, work_started
-            FROM file_scan
-            WHERE status = $1"#,
+        r#"UPDATE file_scan
+            SET being_worked = true
+            WHERE status = $1 AND being_worked = false
+            RETURNING *"#,
         ScanStatus::Pending.as_str()
     ).fetch_optional(pool).await;
 
