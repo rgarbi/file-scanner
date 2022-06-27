@@ -36,25 +36,30 @@ pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<Option<Fi
             FROM file_scan
             WHERE status = $1"#,
         ScanStatus::Pending.as_str()
-    ).fetch_one(pool)
+    ).fetch_optional(pool)
         .await
         .map_err(|e: Error| {
-            if e == Err(RowNotFound) {
-                return Ok(None);
-            }
             tracing::error!("{:?}", e);
-            e
-        })?;
+            Err(e)
+        });
 
-    Ok(Some(FileScan {
-        id: result.id,
-        file_name: result.file_name,
-        file_location: result.file_location,
-        file_hash: result.file_hash,
-        posted_on: result.posted_on,
-        last_updated: result.last_updated,
-        status: ScanStatus::from_str(result.status.as_str()).unwrap(),
-        being_worked: result.being_worked,
-        work_started: result.work_started,
-    }))
+    return match result {
+        Ok(res) => {
+            match res {
+                Some(row) => Ok(Some(FileScan {
+                    id: row.id,
+                    file_name: row.file_name,
+                    file_location: row.file_location,
+                    file_hash: row.file_hash,
+                    posted_on: row.posted_on,
+                    last_updated: row.last_updated,
+                    status: ScanStatus::from_str(row.status.as_str()).unwrap(),
+                    being_worked: row.being_worked,
+                    work_started: row.work_started,
+                })),
+                None => Ok(None)
+            }
+        }
+        Err(e) => Err(e)
+    };
 }
