@@ -1,4 +1,4 @@
-use claim::{assert_ok, assert_some};
+use claim::{assert_err, assert_none, assert_ok, assert_some};
 use file_scanner::db::file_scan_broker::{insert_scan, select_a_file_that_needs_hashing};
 use file_scanner::domain::file_scan_model::ScanStatus;
 use crate::helper::{generate_file_scan, spawn_app};
@@ -23,7 +23,7 @@ async fn insert_scan_errors() {
         .unwrap();
 
     let file_scan = generate_file_scan();
-    assert_ok!(insert_scan(file_scan, &app.db_pool).await);
+    assert_err!(insert_scan(file_scan, &app.db_pool).await);
 }
 
 
@@ -51,4 +51,6 @@ async fn select_a_file_that_needs_hashing_does_not_find_anything() {
     let returned = select_a_file_that_needs_hashing(&app.db_pool).await;
     assert_ok!(&returned);
 
+    let returned_scan = returned.unwrap();
+    assert_none!(&returned_scan);
 }
