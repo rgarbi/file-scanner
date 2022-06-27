@@ -1,4 +1,5 @@
 use std::str::FromStr;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use actix_web::{web, HttpResponse};
 use rand::distributions::Alphanumeric;
@@ -25,6 +26,14 @@ pub fn from_string_to_uuid(id: &str) -> Result<Uuid, HttpResponse> {
     }
 }
 
+pub fn get_unix_epoch_time_as_seconds() -> u64 {
+    let start = SystemTime::now();
+    let since_the_epoch = start
+        .duration_since(UNIX_EPOCH)
+        .expect("Time went backwards");
+    since_the_epoch.as_secs()
+}
+
 pub fn standardize_email(email: &str) -> String {
     email.to_string().to_lowercase()
 }
@@ -42,7 +51,7 @@ mod tests {
     use actix_web::web::Path;
     use uuid::Uuid;
 
-    use crate::util::{from_path_to_uuid, from_string_to_uuid};
+    use crate::util::{from_path_to_uuid, from_string_to_uuid, get_unix_epoch_time_as_seconds};
 
     #[test]
     fn a_uuid_is_valid() {
@@ -64,5 +73,10 @@ mod tests {
     #[quickcheck_macros::quickcheck]
     fn anything_not_a_uuid_is_invalid_from_string(invalid_uuid: String) -> bool {
         from_string_to_uuid(&Path::try_from(invalid_uuid).unwrap()).is_err()
+    }
+
+    #[test]
+    fn get_unix_epoch_time_as_seconds_works() {
+        get_unix_epoch_time_as_seconds();
     }
 }
