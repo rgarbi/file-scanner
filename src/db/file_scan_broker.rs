@@ -36,12 +36,7 @@ pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<Option<Fi
             FROM file_scan
             WHERE status = $1"#,
         ScanStatus::Pending.as_str()
-    ).fetch_optional(pool)
-        .await
-        .map_err(|e: Error| {
-            tracing::error!("{:?}", e);
-            Err(e)
-        });
+    ).fetch_optional(pool).await;
 
     return match result {
         Ok(res) => {
@@ -60,6 +55,9 @@ pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<Option<Fi
                 None => Ok(None)
             }
         }
-        Err(e) => Err(e)
+        Err(e) => {
+            tracing::error!("{:?}", e);
+            Err(e)
+        }
     };
 }
