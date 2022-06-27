@@ -1,4 +1,4 @@
-use claim::assert_ok;
+use claim::{assert_ok, assert_some};
 use file_scanner::db::file_scan_broker::{insert_scan, select_a_file_that_needs_hashing};
 use file_scanner::domain::file_scan_model::ScanStatus;
 use crate::helper::{generate_file_scan, spawn_app};
@@ -38,7 +38,10 @@ async fn select_a_file_that_needs_hashing_works() {
     let returned = select_a_file_that_needs_hashing(&app.db_pool).await;
     assert_ok!(&returned);
 
-    assert_eq!(file_scan.id, returned.unwrap().id);
+    let returned_scan = returned.unwrap();
+    assert_some!(&returned_scan);
+
+    assert_eq!(file_scan.id, returned_scan.unwrap().id);
 }
 
 #[tokio::test]
