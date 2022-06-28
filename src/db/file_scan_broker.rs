@@ -1,8 +1,8 @@
 use crate::domain::file_scan_model::{FileScan, ScanStatus};
+use crate::util::{get_unix_epoch_time_as_seconds, get_unix_epoch_time_minus_minutes_as_seconds};
 use sqlx::{Error, PgPool};
 use std::str::FromStr;
 use uuid::Uuid;
-use crate::util::{get_unix_epoch_time_as_seconds, get_unix_epoch_time_minus_minutes_as_seconds};
 
 #[tracing::instrument(name = "Saving new file scan", skip(file_scan, pool))]
 pub async fn insert_scan(file_scan: FileScan, pool: &PgPool) -> Result<Uuid, Error> {
@@ -43,7 +43,9 @@ pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<Option<Fi
         Some(work_start_time as i64),
         ScanStatus::Pending.as_str(),
         abandoned_time as i64,
-    ).fetch_optional(pool).await;
+    )
+    .fetch_optional(pool)
+    .await;
 
     return match result {
         Ok(res) => match res {

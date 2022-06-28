@@ -2,7 +2,9 @@ use crate::helper::{generate_file_scan, spawn_app};
 use claim::{assert_err, assert_ge, assert_none, assert_ok, assert_some};
 use file_scanner::db::file_scan_broker::{insert_scan, select_a_file_that_needs_hashing};
 use file_scanner::domain::file_scan_model::ScanStatus;
-use file_scanner::util::{get_unix_epoch_time_as_seconds, get_unix_epoch_time_minus_minutes_as_seconds};
+use file_scanner::util::{
+    get_unix_epoch_time_as_seconds, get_unix_epoch_time_minus_minutes_as_seconds,
+};
 
 #[tokio::test]
 async fn insert_scan_works() {

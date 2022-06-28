@@ -1,6 +1,6 @@
 {
   "db": "PostgreSQL",
-  "0cf42e40fe3b9756c37211a0a3ea07ce218a99fdd06c5e00c27fd6d8df88811a": {
+  "3440560cff67fd9db602402dcd4957f8e69ae6ef508ac764f78c55b837bfcecc": {
     "describe": {
       "columns": [
         {
@@ -62,11 +62,13 @@
       ],
       "parameters": {
         "Left": [
-          "Text"
+          "Int8",
+          "Text",
+          "Int8"
         ]
       }
     },
-    "query": "SELECT id, file_name, file_location, file_hash, posted_on, last_updated, status, being_worked, work_started\n            FROM file_scan\n            WHERE status = $1"
+    "query": "UPDATE file_scan\n            SET\n                being_worked = true,\n                work_started = $1\n            WHERE status = $2 AND (being_worked = false OR work_started <= $3)\n            RETURNING *"
   },
   "aae1b91927b052d7d03c99f12b4d71a19007736d56c511714e0e8aa9029c87e9": {
     "describe": {

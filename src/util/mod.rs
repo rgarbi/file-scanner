@@ -58,7 +58,10 @@ mod tests {
     use claim::assert_ge;
     use uuid::Uuid;
 
-    use crate::util::{from_path_to_uuid, from_string_to_uuid, get_unix_epoch_time_as_seconds, get_unix_epoch_time_minus_minutes_as_seconds};
+    use crate::util::{
+        from_path_to_uuid, from_string_to_uuid, get_unix_epoch_time_as_seconds,
+        get_unix_epoch_time_minus_minutes_as_seconds,
+    };
 
     #[test]
     fn a_uuid_is_valid() {
@@ -90,6 +93,9 @@ mod tests {
     #[test]
     fn get_unix_epoch_time_minus_minutes_as_seconds_works() {
         let minus_five_minutes = get_unix_epoch_time_minus_minutes_as_seconds(5);
-        assert_ge!((get_unix_epoch_time_as_seconds() + (5*60)), minus_five_minutes);
+        assert_ge!(
+            (get_unix_epoch_time_as_seconds() + (5 * 60)),
+            minus_five_minutes
+        );
     }
 }
