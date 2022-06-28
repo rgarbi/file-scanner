@@ -2,7 +2,7 @@ use crate::domain::file_scan_model::{FileScan, ScanStatus};
 use sqlx::{Error, PgPool};
 use std::str::FromStr;
 use uuid::Uuid;
-use crate::util::get_unix_epoch_time_as_seconds;
+use crate::util::{get_unix_epoch_time_as_seconds, get_unix_epoch_time_minus_minutes_as_seconds};
 
 #[tracing::instrument(name = "Saving new file scan", skip(file_scan, pool))]
 pub async fn insert_scan(file_scan: FileScan, pool: &PgPool) -> Result<Uuid, Error> {
@@ -32,16 +32,17 @@ pub async fn insert_scan(file_scan: FileScan, pool: &PgPool) -> Result<Uuid, Err
 #[tracing::instrument(name = "Select a file that needs hashing", skip(pool))]
 pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<Option<FileScan>, Error> {
     let work_start_time = get_unix_epoch_time_as_seconds();
-    
+    let abandoned_time = get_unix_epoch_time_minus_minutes_as_seconds(15);
     let result = sqlx::query!(
         r#"UPDATE file_scan
             SET
                 being_worked = true,
                 work_started = $1
-            WHERE status = $2 AND being_worked = false
+            WHERE status = $2 AND (being_worked = false OR work_started <= $3)
             RETURNING *"#,
         Some(work_start_time as i64),
-        ScanStatus::Pending.as_str()
+        ScanStatus::Pending.as_str(),
+        abandoned_time as i64,
     ).fetch_optional(pool).await;
 
     return match result {

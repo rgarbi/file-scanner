@@ -2,7 +2,7 @@ use crate::helper::{generate_file_scan, spawn_app};
 use claim::{assert_err, assert_ge, assert_none, assert_ok, assert_some};
 use file_scanner::db::file_scan_broker::{insert_scan, select_a_file_that_needs_hashing};
 use file_scanner::domain::file_scan_model::ScanStatus;
-use file_scanner::util::get_unix_epoch_time_as_seconds;
+use file_scanner::util::{get_unix_epoch_time_as_seconds, get_unix_epoch_time_minus_minutes_as_seconds};
 
 #[tokio::test]
 async fn insert_scan_works() {
@@ -56,4 +56,28 @@ async fn select_a_file_that_needs_hashing_does_not_find_anything() {
 
     let returned_scan = returned.unwrap();
     assert_none!(&returned_scan);
+}
+
+#[tokio::test]
+async fn select_a_file_that_needs_hashing_because_it_was_abandoned_works() {
+    let app = spawn_app().await;
+
+    let mut file_scan = generate_file_scan();
+    file_scan.status = ScanStatus::Pending;
+    file_scan.work_started = Some(get_unix_epoch_time_minus_minutes_as_seconds(15) as i64 + 1);
+    file_scan.being_worked = true;
+
+    assert_ok!(insert_scan(file_scan.clone(), &app.db_pool).await);
+
+    let returned = select_a_file_that_needs_hashing(&app.db_pool).await;
+    assert_ok!(&returned);
+
+    let returned_scan = returned.unwrap();
+    assert_some!(&returned_scan);
+
+    let now = get_unix_epoch_time_as_seconds() as i64;
+
+    assert_eq!(file_scan.id, returned_scan.clone().unwrap().id);
+    assert_eq!(true, returned_scan.clone().unwrap().being_worked);
+    assert_ge!(now, returned_scan.clone().unwrap().work_started.unwrap())
 }
