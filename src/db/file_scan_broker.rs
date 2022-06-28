@@ -32,6 +32,7 @@ pub async fn insert_scan(file_scan: FileScan, pool: &PgPool) -> Result<Uuid, Err
 #[tracing::instrument(name = "Select a file that needs hashing", skip(pool))]
 pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<Option<FileScan>, Error> {
     let work_start_time = get_unix_epoch_time_as_seconds();
+    
     let result = sqlx::query!(
         r#"UPDATE file_scan
             SET

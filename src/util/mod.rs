@@ -2,6 +2,7 @@ use std::str::FromStr;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use actix_web::{web, HttpResponse};
+use chrono::Duration;
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 use uuid::Uuid;
@@ -34,6 +35,11 @@ pub fn get_unix_epoch_time_as_seconds() -> u64 {
     since_the_epoch.as_secs()
 }
 
+pub fn get_unix_epoch_time_minus_minutes_as_seconds(minus_minutes: i64) -> u64 {
+    let duration = Duration::minutes(minus_minutes).num_seconds();
+    get_unix_epoch_time_as_seconds() - (duration as u64)
+}
+
 pub fn standardize_email(email: &str) -> String {
     email.to_string().to_lowercase()
 }
@@ -49,9 +55,10 @@ pub fn generate_random_token() -> String {
 #[cfg(test)]
 mod tests {
     use actix_web::web::Path;
+    use claim::assert_ge;
     use uuid::Uuid;
 
-    use crate::util::{from_path_to_uuid, from_string_to_uuid, get_unix_epoch_time_as_seconds};
+    use crate::util::{from_path_to_uuid, from_string_to_uuid, get_unix_epoch_time_as_seconds, get_unix_epoch_time_minus_minutes_as_seconds};
 
     #[test]
     fn a_uuid_is_valid() {
@@ -78,5 +85,11 @@ mod tests {
     #[test]
     fn get_unix_epoch_time_as_seconds_works() {
         get_unix_epoch_time_as_seconds();
+    }
+
+    #[test]
+    fn get_unix_epoch_time_minus_minutes_as_seconds_works() {
+        let minus_five_minutes = get_unix_epoch_time_minus_minutes_as_seconds(5);
+        assert_ge!((get_unix_epoch_time_as_seconds() + (5*60)), minus_five_minutes);
     }
 }
