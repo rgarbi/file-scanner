@@ -45,13 +45,13 @@ pub async fn select_a_file_hash_by_id(id: Uuid, pool: &PgPool) -> Result<FileSca
           FROM file_scan
           WHERE id = $1"#,
         id,
-    ).fetch_one(pool)
-        .await
-        .map_err(|e: Error| {
-            tracing::error!("{:?}", e);
-            e
-        })?;
-
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(|e: Error| {
+        tracing::error!("{:?}", e);
+        e
+    })?;
 
     Ok(FileScan {
         id: result.id,
@@ -66,13 +66,14 @@ pub async fn select_a_file_hash_by_id(id: Uuid, pool: &PgPool) -> Result<FileSca
     })
 }
 
-
 pub static MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_HASH_AGAIN: i64 = 15;
 
 #[tracing::instrument(name = "Select a file that needs hashing", skip(pool))]
 pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<Option<FileScan>, Error> {
     let work_start_time = get_unix_epoch_time_as_seconds() as i64;
-    let abandoned_time = get_unix_epoch_time_minus_minutes_as_seconds(MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_HASH_AGAIN) as i64;
+    let abandoned_time = get_unix_epoch_time_minus_minutes_as_seconds(
+        MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_HASH_AGAIN,
+    ) as i64;
     let result = sqlx::query!(
         r#"UPDATE file_scan
             SET
@@ -87,8 +88,8 @@ pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<Option<Fi
         ScanStatus::Hashing.as_str(),
         abandoned_time,
     )
-        .fetch_optional(pool)
-        .await;
+    .fetch_optional(pool)
+    .await;
 
     return match result {
         Ok(res) => match res {
@@ -113,7 +114,11 @@ pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<Option<Fi
 }
 
 #[tracing::instrument(name = "Set a file to be done with hashing", skip(id, pool))]
-pub async fn set_a_file_scan_to_be_done_hashing(id: Uuid, hash: String, pool: &PgPool) -> Result<(), Error> {
+pub async fn set_a_file_scan_to_be_done_hashing(
+    id: Uuid,
+    hash: String,
+    pool: &PgPool,
+) -> Result<(), Error> {
     sqlx::query!(
         r#"UPDATE file_scan
             SET
@@ -124,12 +129,13 @@ pub async fn set_a_file_scan_to_be_done_hashing(id: Uuid, hash: String, pool: &P
         ScanStatus::DoneHashing.as_str(),
         hash,
         id,
-    ).execute(pool)
-        .await
-        .map_err(|e: Error| {
-            tracing::error!("{:?}", e);
-            e
-        })?;
+    )
+    .execute(pool)
+    .await
+    .map_err(|e: Error| {
+        tracing::error!("{:?}", e);
+        e
+    })?;
 
     Ok(())
 }

@@ -4,7 +4,7 @@ use chrono::Utc;
 use futures_util::StreamExt;
 use sqlx::PgPool;
 use tokio::fs::File;
-use tokio::io::{AsyncWriteExt};
+use tokio::io::AsyncWriteExt;
 use uuid::Uuid;
 
 use crate::db::file_scan_broker::insert_scan;
@@ -39,4 +39,3 @@ pub async fn scan_file(mut payload: web::Payload, pool: web::Data<PgPool>) -> im
         Err(_) => HttpResponse::InternalServerError().finish(),
     };
 }
-

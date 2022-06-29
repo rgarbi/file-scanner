@@ -1,5 +1,5 @@
-use claim::assert_ok;
 use crate::helper::{spawn_app, to_file_scan_from_str};
+use claim::assert_ok;
 use file_scanner::background::background_hasher::hash_files;
 use file_scanner::db::file_scan_broker::select_a_file_hash_by_id;
 use file_scanner::domain::file_scan_model::ScanStatus;

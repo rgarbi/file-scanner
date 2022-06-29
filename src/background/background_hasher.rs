@@ -1,10 +1,12 @@
-use crate::db::file_scan_broker::{select_a_file_that_needs_hashing, set_a_file_scan_to_be_done_hashing};
-use tracing::Level;
+use crate::db::file_scan_broker::{
+    select_a_file_that_needs_hashing, set_a_file_scan_to_be_done_hashing,
+};
 use data_encoding::HEXUPPER;
 use ring::digest::{Context, Digest, SHA256};
 use sqlx::PgPool;
 use tokio::fs::File;
-use tokio::io::{AsyncReadExt};
+use tokio::io::AsyncReadExt;
+use tracing::Level;
 
 pub async fn hash_files(pg_pool: &PgPool) {
     //get a lock on a file that has been posted but has not been hashed.
@@ -17,7 +19,8 @@ pub async fn hash_files(pg_pool: &PgPool) {
                 //hash the file.
                 let file_hash = hash_a_file(file_scan.file_location.clone()).await;
                 //update the record
-                let _save_result = set_a_file_scan_to_be_done_hashing(file_scan.id, file_hash, pg_pool).await;
+                let _save_result =
+                    set_a_file_scan_to_be_done_hashing(file_scan.id, file_hash, pg_pool).await;
             }
         }
         Err(err) => {
@@ -46,4 +49,3 @@ async fn sha256_digest(mut file: File) -> Digest {
 
     context.finish()
 }
-

@@ -112,7 +112,9 @@ mod tests {
             ScanStatus::Hashing.as_str()
         );
         assert_eq!(
-            ScanStatus::from_str("DoneScanningBadFile").unwrap().as_str(),
+            ScanStatus::from_str("DoneScanningBadFile")
+                .unwrap()
+                .as_str(),
             ScanStatus::DoneScanningBadFile.as_str()
         );
         assert_eq!(
