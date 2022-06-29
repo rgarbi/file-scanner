@@ -1,9 +1,7 @@
 use crate::configuration::get_configuration;
 use actix_web::{web, HttpResponse, Responder};
 use chrono::Utc;
-use data_encoding::HEXUPPER;
 use futures_util::StreamExt;
-use ring::digest::{Context, Digest, SHA256};
 use sqlx::PgPool;
 use tokio::fs::File;
 use tokio::io::{AsyncWriteExt};

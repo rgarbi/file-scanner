@@ -40,6 +40,10 @@ impl FromStr for ScanStatus {
             return Ok(ScanStatus::Hashing);
         }
 
+        if val.eq("DoneHashing") {
+            return Ok(ScanStatus::DoneHashing);
+        }
+
         if val.eq("Scanning") {
             return Ok(ScanStatus::Scanning);
         }
@@ -48,12 +52,12 @@ impl FromStr for ScanStatus {
             return Ok(ScanStatus::Error);
         }
 
-        if val.eq("DoneClean") {
-            return Ok(ScanStatus::DoneClean);
+        if val.eq("DoneScanningClean") {
+            return Ok(ScanStatus::DoneScanningClean);
         }
 
-        if val.eq("DoneBadFile") {
-            return Ok(ScanStatus::DoneBadFile);
+        if val.eq("DoneScanningBadFile") {
+            return Ok(ScanStatus::DoneScanningBadFile);
         }
 
         error!("Could not map string: {} to the enum SubscriptionType", val);
@@ -66,10 +70,11 @@ impl ScanStatus {
         match self {
             ScanStatus::Pending => "Pending",
             ScanStatus::Hashing => "Hashing",
+            ScanStatus::DoneHashing => "DoneHashing",
             ScanStatus::Scanning => "Scanning",
             ScanStatus::Error => "Error",
-            ScanStatus::DoneClean => "DoneClean",
-            ScanStatus::DoneBadFile => "DoneBadFile",
+            ScanStatus::DoneScanningClean => "DoneScanningClean",
+            ScanStatus::DoneScanningBadFile => "DoneScanningBadFile",
         }
     }
 }
@@ -107,12 +112,12 @@ mod tests {
             ScanStatus::Hashing.as_str()
         );
         assert_eq!(
-            ScanStatus::from_str("DoneBadFile").unwrap().as_str(),
-            ScanStatus::DoneBadFile.as_str()
+            ScanStatus::from_str("DoneScanningBadFile").unwrap().as_str(),
+            ScanStatus::DoneScanningBadFile.as_str()
         );
         assert_eq!(
-            ScanStatus::from_str("DoneClean").unwrap().as_str(),
-            ScanStatus::DoneClean.as_str()
+            ScanStatus::from_str("DoneScanningClean").unwrap().as_str(),
+            ScanStatus::DoneScanningClean.as_str()
         );
 
         assert_err!(ScanStatus::from_str(Uuid::new_v4().to_string().as_str()));
