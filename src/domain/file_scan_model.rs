@@ -21,10 +21,11 @@ pub struct FileScan {
 pub enum ScanStatus {
     Pending,
     Hashing,
+    DoneHashing,
     Scanning,
+    DoneScanningClean,
+    DoneScanningBadFile,
     Error,
-    DoneClean,
-    DoneBadFile,
 }
 
 impl FromStr for ScanStatus {

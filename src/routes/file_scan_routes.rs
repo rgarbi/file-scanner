@@ -29,7 +29,7 @@ pub async fn scan_file(mut payload: web::Payload, pool: web::Data<PgPool>) -> im
         id: Uuid::new_v4(),
         file_name: filename.clone(),
         file_location: filepath.clone(),
-        file_hash,
+        file_hash: String::new(),
         posted_on: Utc::now(),
         last_updated: Utc::now(),
         status: ScanStatus::Pending,
@@ -43,23 +43,3 @@ pub async fn scan_file(mut payload: web::Payload, pool: web::Data<PgPool>) -> im
     };
 }
 
-async fn hash_a_file(path: String) -> String {
-    let input = File::open(path).await.unwrap();
-    let digest = sha256_digest(input).await;
-    HEXUPPER.encode(digest.as_ref())
-}
-
-async fn sha256_digest(mut file: File) -> Digest {
-    let mut context = Context::new(&SHA256);
-    let mut buffer = [0; 1024];
-
-    loop {
-        let count = file.read(&mut buffer).await.unwrap();
-        if count == 0 {
-            break;
-        }
-        context.update(&buffer[..count]);
-    }
-
-    context.finish()
-}
