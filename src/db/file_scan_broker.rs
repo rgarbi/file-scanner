@@ -75,14 +75,16 @@ pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<Option<Fi
 }
 
 #[tracing::instrument(name = "Set a file to be done with hashing", skip(id, pool))]
-pub async fn set_a_file_scan_to_be_done_hashing(id: Uuid, pool: &PgPool) -> Result<(), Error> {
+pub async fn set_a_file_scan_to_be_done_hashing(id: Uuid, hash: String, pool: &PgPool) -> Result<(), Error> {
     let result = sqlx::query!(
         r#"UPDATE file_scan
             SET
                 being_worked = false,
-                status = $1
-            WHERE id = $2"#,
+                status = $1,
+                file_hash = $2
+            WHERE id = $3"#,
         ScanStatus::DoneHashing.as_str(),
+        hash,
         id,
     ).execute(pool)
         .await

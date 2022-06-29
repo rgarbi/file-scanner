@@ -1,5 +1,5 @@
 use crate::configuration::get_configuration;
-use crate::db::file_scan_broker::select_a_file_that_needs_hashing;
+use crate::db::file_scan_broker::{select_a_file_that_needs_hashing, set_a_file_scan_to_be_done_hashing};
 use crate::startup::get_connection_pool;
 use tracing::Level;
 use data_encoding::HEXUPPER;
@@ -20,7 +20,7 @@ pub async fn hash_files() {
                 //hash the file.
                 let file_hash = hash_a_file(file_scan.file_location.clone()).await;
                 //update the record
-
+                let _save_result = set_a_file_scan_to_be_done_hashing(file_scan.id, file_hash, &pg_pool).await;
             }
         }
         Err(err) => {

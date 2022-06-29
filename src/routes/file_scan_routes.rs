@@ -6,7 +6,7 @@ use futures_util::StreamExt;
 use ring::digest::{Context, Digest, SHA256};
 use sqlx::PgPool;
 use tokio::fs::File;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::io::{AsyncWriteExt};
 use uuid::Uuid;
 
 use crate::db::file_scan_broker::insert_scan;
@@ -24,7 +24,6 @@ pub async fn scan_file(mut payload: web::Payload, pool: web::Data<PgPool>) -> im
         file.write_all(&chunk).await.unwrap();
     }
 
-    let file_hash = hash_a_file(filepath.clone()).await;
     let file_scan = FileScan {
         id: Uuid::new_v4(),
         file_name: filename.clone(),

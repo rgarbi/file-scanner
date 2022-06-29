@@ -14,4 +14,6 @@ async fn post_file_to_file_scan_works() {
     println!("Response: {:?}", response.text().await.unwrap());
 
     hash_files().await;
+
+
 }
