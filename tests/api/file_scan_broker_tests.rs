@@ -1,6 +1,6 @@
 use crate::helper::{generate_file_scan, spawn_app};
 use claim::{assert_err, assert_ge, assert_none, assert_ok, assert_some};
-use file_scanner::db::file_scan_broker::{insert_scan, select_a_file_that_needs_hashing};
+use file_scanner::db::file_scan_broker::{insert_scan, MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_HASH_AGAIN, select_a_file_that_needs_hashing};
 use file_scanner::domain::file_scan_model::ScanStatus;
 use file_scanner::util::{
     get_unix_epoch_time_as_seconds, get_unix_epoch_time_minus_minutes_as_seconds,
@@ -66,7 +66,7 @@ async fn select_a_file_that_needs_hashing_because_it_was_abandoned_works() {
 
     let mut file_scan = generate_file_scan();
     file_scan.status = ScanStatus::Pending;
-    file_scan.work_started = Some(get_unix_epoch_time_minus_minutes_as_seconds(15) as i64 + 1);
+    file_scan.work_started = Some(get_unix_epoch_time_minus_minutes_as_seconds(MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_HASH_AGAIN) as i64 + 1);
     file_scan.being_worked = true;
 
     assert_ok!(insert_scan(file_scan.clone(), &app.db_pool).await);
@@ -90,7 +90,7 @@ async fn select_a_file_that_needs_hashing_does_not_get_a_file_still_being_worked
 
     let mut file_scan = generate_file_scan();
     file_scan.status = ScanStatus::Pending;
-    file_scan.work_started = Some(get_unix_epoch_time_minus_minutes_as_seconds(10) as i64);
+    file_scan.work_started = Some(get_unix_epoch_time_minus_minutes_as_seconds(MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_HASH_AGAIN - 1) as i64);
     file_scan.being_worked = true;
 
     assert_ok!(insert_scan(file_scan.clone(), &app.db_pool).await);
@@ -103,12 +103,12 @@ async fn select_a_file_that_needs_hashing_does_not_get_a_file_still_being_worked
 }
 
 #[tokio::test]
-async fn select_a_file_that_needs_hashing_does_not_get_a_file_still_being_worked() {
+async fn select_a_file_that_is_stuck_hashing() {
     let app = spawn_app().await;
 
     let mut file_scan = generate_file_scan();
-    file_scan.status = ScanStatus::Pending;
-    file_scan.work_started = Some(get_unix_epoch_time_minus_minutes_as_seconds(10) as i64);
+    file_scan.status = ScanStatus::Hashing;
+    file_scan.work_started = Some(get_unix_epoch_time_minus_minutes_as_seconds(MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_HASH_AGAIN) as i64);
     file_scan.being_worked = true;
 
     assert_ok!(insert_scan(file_scan.clone(), &app.db_pool).await);

@@ -29,10 +29,12 @@ pub async fn insert_scan(file_scan: FileScan, pool: &PgPool) -> Result<Uuid, Err
     Ok(file_scan.id)
 }
 
+pub static MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_HASH_AGAIN: i64 = 15;
+
 #[tracing::instrument(name = "Select a file that needs hashing", skip(pool))]
 pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<Option<FileScan>, Error> {
     let work_start_time = get_unix_epoch_time_as_seconds();
-    let abandoned_time = get_unix_epoch_time_minus_minutes_as_seconds(15);
+    let abandoned_time = get_unix_epoch_time_minus_minutes_as_seconds(MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_HASH_AGAIN);
     let result = sqlx::query!(
         r#"UPDATE file_scan
             SET
@@ -47,8 +49,8 @@ pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<Option<Fi
         ScanStatus::Hashing.as_str(),
         abandoned_time as i64,
     )
-    .fetch_optional(pool)
-    .await;
+        .fetch_optional(pool)
+        .await;
 
     return match result {
         Ok(res) => match res {
