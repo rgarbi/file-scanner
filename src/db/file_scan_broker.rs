@@ -37,11 +37,14 @@ pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<Option<Fi
         r#"UPDATE file_scan
             SET
                 being_worked = true,
-                work_started = $1
-            WHERE status = $2 AND (being_worked = false OR work_started <= $3)
+                work_started = $1,
+                status = $2
+            WHERE (status = $3 AND being_worked = false) OR (status = $4 AND work_started <= $5)
             RETURNING *"#,
         Some(work_start_time as i64),
+        ScanStatus::Hashing.as_str(),
         ScanStatus::Pending.as_str(),
+        ScanStatus::Hashing.as_str(),
         abandoned_time as i64,
     )
     .fetch_optional(pool)

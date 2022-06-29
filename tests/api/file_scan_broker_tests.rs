@@ -101,3 +101,21 @@ async fn select_a_file_that_needs_hashing_does_not_get_a_file_still_being_worked
     let returned_scan = returned.unwrap();
     assert_none!(&returned_scan);
 }
+
+#[tokio::test]
+async fn select_a_file_that_needs_hashing_does_not_get_a_file_still_being_worked() {
+    let app = spawn_app().await;
+
+    let mut file_scan = generate_file_scan();
+    file_scan.status = ScanStatus::Pending;
+    file_scan.work_started = Some(get_unix_epoch_time_minus_minutes_as_seconds(10) as i64);
+    file_scan.being_worked = true;
+
+    assert_ok!(insert_scan(file_scan.clone(), &app.db_pool).await);
+
+    let returned = select_a_file_that_needs_hashing(&app.db_pool).await;
+    assert_ok!(&returned);
+
+    let returned_scan = returned.unwrap();
+    assert_none!(&returned_scan);
+}
