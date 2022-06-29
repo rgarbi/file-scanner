@@ -87,7 +87,8 @@ mod tests {
 
     #[test]
     fn get_unix_epoch_time_as_seconds_works() {
-        get_unix_epoch_time_as_seconds();
+        let secs = get_unix_epoch_time_as_seconds();
+        println!("{}", secs);
     }
 
     #[test]

@@ -105,3 +105,7 @@ pub fn generate_file_scan() -> FileScan {
         work_started: None,
     }
 }
+
+pub fn to_file_scan_from_str(file_scan: &str) -> FileScan {
+    serde_json::from_str(file_scan).unwrap()
+}
