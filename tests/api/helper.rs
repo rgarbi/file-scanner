@@ -106,6 +106,15 @@ pub fn generate_file_scan() -> FileScan {
     }
 }
 
+pub async fn send_file(app: &TestApp) -> FileScan {
+    let input: &[u8] = include_bytes!("../../tests/test_files/sample_file_1.txt");
+    let body = Vec::from(input);
+    let response = app.post_scan(body).await;
+
+    assert!(&response.status().is_success());
+    to_file_scan_from_str(response.text().await.unwrap().as_str())
+}
+
 pub fn to_file_scan_from_str(file_scan: &str) -> FileScan {
     serde_json::from_str(file_scan).unwrap()
 }
