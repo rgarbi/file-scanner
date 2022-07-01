@@ -44,13 +44,17 @@ async fn post_file_to_file_scan_2x_does_the_right_thing() {
 
     hash_files(&app.db_pool).await;
 
-    let after_hash_second_hash = select_a_file_hash_by_id(file_scan_stored.clone().id, &app.db_pool).await;
+    let after_hash_second_hash =
+        select_a_file_hash_by_id(file_scan_stored.clone().id, &app.db_pool).await;
     assert_ok!(&after_hash_second_hash);
 
     let file_scan_after_second_hash = after_hash_second_hash.unwrap();
 
     assert_ne!(&file_scan_after_second_hash.file_hash, "");
-    assert_eq!(&file_scan_after_second_hash.status, &ScanStatus::DoneHashing);
+    assert_eq!(
+        &file_scan_after_second_hash.status,
+        &ScanStatus::DoneHashing
+    );
 }
 
 #[tokio::test]
@@ -71,5 +75,4 @@ async fn post_file_to_file_scan_blows_up_when_fetching_file() {
 
     let after_hash = select_a_file_hash_by_id(file_scan_stored.clone().id, &app.db_pool).await;
     assert_err!(&after_hash);
-
 }
