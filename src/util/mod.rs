@@ -58,10 +58,7 @@ mod tests {
     use claim::assert_ge;
     use uuid::Uuid;
 
-    use crate::util::{
-        from_path_to_uuid, from_string_to_uuid, get_unix_epoch_time_as_seconds,
-        get_unix_epoch_time_minus_minutes_as_seconds,
-    };
+    use crate::util::{from_path_to_uuid, from_string_to_uuid, generate_random_token, get_unix_epoch_time_as_seconds, get_unix_epoch_time_minus_minutes_as_seconds, standardize_email};
 
     #[test]
     fn a_uuid_is_valid() {
@@ -98,5 +95,15 @@ mod tests {
             (get_unix_epoch_time_as_seconds() + (5 * 60)),
             minus_five_minutes
         );
+    }
+
+    #[test]
+    fn generate_random_token_works() {
+        generate_random_token();
+    }
+
+    #[test]
+    fn standardize_email_works() {
+        standardize_email(generate_random_token().as_str());
     }
 }
