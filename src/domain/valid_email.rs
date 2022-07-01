@@ -65,4 +65,14 @@ mod tests {
         let email = "@domain.com".to_string();
         assert_err!(ValidEmail::parse(email));
     }
+
+    #[test]
+    fn valid_email_as_ref() {
+        let email = SafeEmail().fake();
+        let valid_email_result = ValidEmail::parse(email);
+        claim::assert_ok!(&valid_email_result);
+        let valid_email = valid_email_result.unwrap();
+
+        valid_email.as_ref();
+    }
 }
