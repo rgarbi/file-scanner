@@ -57,7 +57,7 @@ async fn select_a_file_among_many_that_needs_hashing_works() {
 
     let mut file_scan_ids: Vec<Uuid> = Vec::new();
 
-    for _ in 1..10 {
+    for _ in 0..10 {
         let mut file_scan = generate_file_scan();
         file_scan.status = ScanStatus::Pending;
         let result = insert_scan(file_scan.clone(), &app.db_pool).await;
@@ -71,6 +71,12 @@ async fn select_a_file_among_many_that_needs_hashing_works() {
     assert_ok!(&returned);
     let returned_scan = returned.unwrap();
     assert_some!(&returned_scan);
+
+    let get_by_status_result = select_all_file_hashes_by_status(ScanStatus::Pending, &app.db_pool).await;
+    assert_ok!(&get_by_status_result);
+
+    let scans = get_by_status_result.unwrap();
+    assert_eq!(9, scans.len());
 
 
 
@@ -187,7 +193,7 @@ async fn select_all_file_hashes_by_status_errors() {
     let app = spawn_app(false).await;
 
     let file_scan = generate_file_scan();
-    assert_err!(insert_scan(file_scan, &app.db_pool).await);
+    assert_ok!(insert_scan(file_scan, &app.db_pool).await);
 
     // Sabotage the database
     sqlx::query!("ALTER TABLE file_scan DROP COLUMN file_name;",)
