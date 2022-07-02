@@ -15,9 +15,10 @@ pub async fn schedule_hashing(pg_pool: PgPool) {
         loop {
             interval.tick().await;
             let a_pool = pg_pool.clone();
-            task::spawn(async move {
+            let handle = task::spawn(async move {
                 hash_files(&a_pool).await;
             });
+            handle.await.unwrap();
         }
     });
 }

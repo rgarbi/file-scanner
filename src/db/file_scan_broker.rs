@@ -80,7 +80,14 @@ pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<Option<Fi
                 being_worked = true,
                 work_started = $1,
                 status = $2
-            WHERE (status = $3 AND being_worked = false) OR (status = $4 AND work_started <= $5)
+            WHERE id = (
+                SELECT id
+                FROM file_scan
+                WHERE
+                    (status = $3 AND being_worked = false) OR (status = $4 AND work_started <= $5)
+                LIMIT 1
+                FOR    UPDATE SKIP LOCKED
+            )
             RETURNING *"#,
         Some(work_start_time),
         ScanStatus::Hashing.as_str(),
