@@ -9,6 +9,7 @@ use actix_web::{web, App, HttpServer};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use tracing_actix_web::TracingLogger;
+use crate::background::background_scheduler::spin_up_background_tasks;
 
 use crate::configuration::{DatabaseSettings, Settings};
 use crate::email_client::EmailClient;
@@ -43,8 +44,10 @@ impl Application {
         );
         let listener = TcpListener::bind(&address)?;
         let port = listener.local_addr().unwrap().port();
+        let server = run(listener, connection_pool.clone(), email_client)?;
 
-        let server = run(listener, connection_pool, email_client)?;
+        spin_up_background_tasks(&connection_pool).await;
+
         Ok(Self { port, server })
     }
     pub fn port(&self) -> u16 {

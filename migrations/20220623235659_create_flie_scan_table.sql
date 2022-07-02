@@ -10,4 +10,4 @@ CREATE TABLE file_scan(
     status TEXT NOT NULL
 );
 
-CREATE UNIQUE INDEX file_hash_idx ON file_scan (file_hash);
+CREATE INDEX file_hash_idx ON file_scan (file_hash);
