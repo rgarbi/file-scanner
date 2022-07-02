@@ -9,7 +9,7 @@ use file_scanner::util::{
 
 #[tokio::test]
 async fn insert_scan_works() {
-    let app = spawn_app().await;
+    let app = spawn_app(false).await;
 
     let file_scan = generate_file_scan();
     assert_ok!(insert_scan(file_scan, &app.db_pool).await);
@@ -17,7 +17,7 @@ async fn insert_scan_works() {
 
 #[tokio::test]
 async fn insert_scan_errors() {
-    let app = spawn_app().await;
+    let app = spawn_app(false).await;
 
     // Sabotage the database
     sqlx::query!("ALTER TABLE file_scan DROP COLUMN file_name;",)
@@ -31,7 +31,7 @@ async fn insert_scan_errors() {
 
 #[tokio::test]
 async fn select_a_file_that_needs_hashing_works() {
-    let app = spawn_app().await;
+    let app = spawn_app(false).await;
 
     let mut file_scan = generate_file_scan();
     file_scan.status = ScanStatus::Pending;
@@ -53,7 +53,7 @@ async fn select_a_file_that_needs_hashing_works() {
 
 #[tokio::test]
 async fn select_a_file_among_many_that_needs_hashing_works() {
-    let app = spawn_app().await;
+    let app = spawn_app(false).await;
 
     let mut file_scan_ids: Vec<Uuid> = Vec::new();
 
@@ -78,7 +78,7 @@ async fn select_a_file_among_many_that_needs_hashing_works() {
 
 #[tokio::test]
 async fn select_a_file_that_needs_hashing_does_not_find_anything() {
-    let app = spawn_app().await;
+    let app = spawn_app(false).await;
 
     let returned = select_a_file_that_needs_hashing(&app.db_pool).await;
     assert_ok!(&returned);
@@ -89,7 +89,7 @@ async fn select_a_file_that_needs_hashing_does_not_find_anything() {
 
 #[tokio::test]
 async fn select_a_file_that_needs_hashing_because_it_was_abandoned_works() {
-    let app = spawn_app().await;
+    let app = spawn_app(false).await;
 
     let mut file_scan = generate_file_scan();
     file_scan.status = ScanStatus::Hashing;
@@ -118,7 +118,7 @@ async fn select_a_file_that_needs_hashing_because_it_was_abandoned_works() {
 
 #[tokio::test]
 async fn select_a_file_that_needs_hashing_does_not_get_a_file_still_being_worked() {
-    let app = spawn_app().await;
+    let app = spawn_app(false).await;
 
     let mut file_scan = generate_file_scan();
     file_scan.status = ScanStatus::Pending;
@@ -138,7 +138,7 @@ async fn select_a_file_that_needs_hashing_does_not_get_a_file_still_being_worked
 
 #[tokio::test]
 async fn select_a_file_that_is_stuck_hashing() {
-    let app = spawn_app().await;
+    let app = spawn_app(false).await;
 
     let mut file_scan = generate_file_scan();
     file_scan.status = ScanStatus::Hashing;
@@ -159,7 +159,7 @@ async fn select_a_file_that_is_stuck_hashing() {
 
 #[tokio::test]
 async fn select_all_file_hashes_by_status_works() {
-    let app = spawn_app().await;
+    let app = spawn_app(false).await;
 
     let file_scan = generate_file_scan();
     assert_ok!(insert_scan(file_scan, &app.db_pool).await);
@@ -173,7 +173,7 @@ async fn select_all_file_hashes_by_status_works() {
 
 #[tokio::test]
 async fn select_all_file_hashes_by_status_size_zero_works() {
-    let app = spawn_app().await;
+    let app = spawn_app(false).await;
 
     let get_by_status_result = select_all_file_hashes_by_status(ScanStatus::Pending, &app.db_pool).await;
     assert_ok!(&get_by_status_result);
@@ -184,7 +184,7 @@ async fn select_all_file_hashes_by_status_size_zero_works() {
 
 #[tokio::test]
 async fn select_all_file_hashes_by_status_errors() {
-    let app = spawn_app().await;
+    let app = spawn_app(false).await;
 
     let file_scan = generate_file_scan();
     assert_err!(insert_scan(file_scan, &app.db_pool).await);

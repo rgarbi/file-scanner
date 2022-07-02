@@ -4,7 +4,7 @@ use crate::helper::spawn_app;
 
 #[tokio::test]
 async fn health_check_works() {
-    let app = spawn_app().await;
+    let app = spawn_app(true).await;
     let client: Client = Client::new();
 
     let response = client

@@ -2,7 +2,7 @@ use crate::helper::spawn_app;
 
 #[tokio::test]
 async fn post_file_to_file_scan_works() {
-    let app = spawn_app().await;
+    let app = spawn_app(true).await;
 
     let input: &[u8] = include_bytes!("../../tests/test_files/sample_file_1.txt");
     let body = Vec::from(input);
@@ -16,7 +16,7 @@ async fn post_file_to_file_scan_works() {
 
 #[tokio::test]
 async fn post_file_to_file_scan_throws_a_500_when_it_cannot_insert_the_record() {
-    let app = spawn_app().await;
+    let app = spawn_app(true).await;
 
     let input: &[u8] = include_bytes!("../../tests/test_files/sample_file_1.txt");
     let body = Vec::from(input);

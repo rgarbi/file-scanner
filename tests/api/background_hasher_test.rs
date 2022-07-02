@@ -6,7 +6,7 @@ use file_scanner::domain::file_scan_model::ScanStatus;
 
 #[tokio::test]
 async fn post_file_to_file_scan_works() {
-    let app = spawn_app().await;
+    let app = spawn_app(false).await;
 
     let file_scan_stored = send_file(&app).await;
 
@@ -26,7 +26,7 @@ async fn post_file_to_file_scan_works() {
 
 #[tokio::test]
 async fn post_file_to_file_scan_2x_does_the_right_thing() {
-    let app = spawn_app().await;
+    let app = spawn_app(false).await;
 
     let file_scan_stored = send_file(&app).await;
     assert_eq!(&file_scan_stored.file_hash, "");
@@ -59,7 +59,7 @@ async fn post_file_to_file_scan_2x_does_the_right_thing() {
 
 #[tokio::test]
 async fn post_file_to_file_scan_blows_up_when_fetching_file() {
-    let app = spawn_app().await;
+    let app = spawn_app(false).await;
     let file_scan_stored = send_file(&app).await;
 
     assert_eq!(&file_scan_stored.file_hash, "");

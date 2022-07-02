@@ -49,7 +49,7 @@ impl Application {
         if configuration.application.enable_background_processing {
             spin_up_background_tasks(connection_pool.clone()).await;
         }
-        
+
         Ok(Self { port, server })
     }
     pub fn port(&self) -> u16 {

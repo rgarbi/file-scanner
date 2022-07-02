@@ -52,6 +52,7 @@ pub async fn spawn_app(enable_background_processing: bool) -> TestApp {
         c.database.database_name = Uuid::new_v4().to_string();
         c.application.port = 0;
         c.email_client.base_url = email_server.uri();
+        c.application.enable_background_processing = enable_background_processing;
         c
     };
 
