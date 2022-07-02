@@ -46,8 +46,10 @@ impl Application {
         let port = listener.local_addr().unwrap().port();
         let server = run(listener, connection_pool.clone(), email_client)?;
 
-        spin_up_background_tasks(connection_pool.clone()).await;
-
+        if configuration.application.enable_background_processing {
+            spin_up_background_tasks(connection_pool.clone()).await;
+        }
+        
         Ok(Self { port, server })
     }
     pub fn port(&self) -> u16 {

@@ -46,12 +46,12 @@ pub async fn select_a_file_hash_by_id(id: Uuid, pool: &PgPool) -> Result<FileSca
           WHERE id = $1"#,
         id,
     )
-    .fetch_one(pool)
-    .await
-    .map_err(|e: Error| {
-        tracing::error!("{:?}", e);
-        e
-    })?;
+        .fetch_one(pool)
+        .await
+        .map_err(|e: Error| {
+            tracing::error!("{:?}", e);
+            e
+        })?;
 
     Ok(FileScan {
         id: result.id,
@@ -95,8 +95,8 @@ pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<Option<Fi
         ScanStatus::Hashing.as_str(),
         abandoned_time,
     )
-    .fetch_optional(pool)
-    .await;
+        .fetch_optional(pool)
+        .await;
 
     return match result {
         Ok(res) => match res {
@@ -137,12 +137,55 @@ pub async fn set_a_file_scan_to_be_done_hashing(
         hash,
         id,
     )
-    .execute(pool)
-    .await
-    .map_err(|e: Error| {
-        tracing::error!("{:?}", e);
-        e
-    })?;
+        .execute(pool)
+        .await
+        .map_err(|e: Error| {
+            tracing::error!("{:?}", e);
+            e
+        })?;
 
     Ok(())
+}
+
+#[tracing::instrument(name = "Get all file hashes by status", skip(pool))]
+pub async fn select_all_file_hashes_by_status(status: ScanStatus, pool: &PgPool) -> Result<Vec<FileScan>, Error> {
+    let rows = sqlx::query!(
+        r#"SELECT
+            id,
+            file_name,
+            file_location,
+            file_hash,
+            posted_on,
+            last_updated,
+            status,
+            being_worked,
+            work_started
+          FROM file_scan
+          WHERE status = $1"#,
+        status.as_str(),
+    )
+        .fetch_all(pool)
+        .await
+        .map_err(|e: Error| {
+            tracing::error!("{:?}", e);
+            e
+        })?;
+
+    let mut file_scans: Vec<FileScan> = Vec::new();
+
+    for row in rows {
+        file_scans.push(FileScan {
+            id: row.id,
+            file_name: row.file_name,
+            file_location: row.file_location,
+            file_hash: row.file_hash,
+            posted_on: row.posted_on,
+            last_updated: row.last_updated,
+            status: ScanStatus::from_str(row.status.as_str()).unwrap(),
+            being_worked: row.being_worked,
+            work_started: row.work_started,
+        });
+    }
+
+    Ok(file_scans)
 }

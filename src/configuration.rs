@@ -23,6 +23,7 @@ pub struct ApplicationSettings {
     pub host: String,
     pub external_hostname: String,
     pub web_app_host: String,
+    pub enable_background_processing: bool,
 }
 
 #[derive(serde::Deserialize, Clone)]

@@ -42,7 +42,7 @@ impl TestApp {
     }
 }
 
-pub async fn spawn_app() -> TestApp {
+pub async fn spawn_app(enable_background_processing: bool) -> TestApp {
     Lazy::force(&TRACING);
 
     let email_server = MockServer::start().await;
