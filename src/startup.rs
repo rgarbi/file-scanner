@@ -1,5 +1,6 @@
 use std::net::TcpListener;
 
+use crate::background::background_scheduler::spin_up_background_tasks;
 use actix_cors::Cors;
 use actix_web::dev::Server;
 use actix_web::http::header;
@@ -9,7 +10,6 @@ use actix_web::{web, App, HttpServer};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use tracing_actix_web::TracingLogger;
-use crate::background::background_scheduler::spin_up_background_tasks;
 
 use crate::configuration::{DatabaseSettings, Settings};
 use crate::email_client::EmailClient;

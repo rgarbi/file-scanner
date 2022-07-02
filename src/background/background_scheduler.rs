@@ -1,8 +1,7 @@
-use std::time::Duration;
-use sqlx::PgPool;
-use tokio::{task, time};
 use crate::background::background_hasher::hash_files;
-
+use sqlx::PgPool;
+use std::time::Duration;
+use tokio::{task, time};
 
 pub async fn spin_up_background_tasks(pg_pool: PgPool) {
     schedule_hashing(pg_pool).await;

@@ -1,6 +1,6 @@
 {
   "db": "PostgreSQL",
-  "67d926f2c3836c74a71e94cb978edd85dfc4127e90bf09e4a82b04154595d258": {
+  "0937bfc68f14bc126f05ca3853636ddd5da9278405d0d4f2e7eb2089f8479849": {
     "describe": {
       "columns": [
         {
@@ -70,7 +70,7 @@
         ]
       }
     },
-    "query": "UPDATE file_scan\n            SET\n                being_worked = true,\n                work_started = $1,\n                status = $2\n            WHERE (status = $3 AND being_worked = false) OR (status = $4 AND work_started <= $5)\n            RETURNING *"
+    "query": "UPDATE file_scan\n            SET\n                being_worked = true,\n                work_started = $1,\n                status = $2\n            WHERE id = (\n                SELECT id\n                FROM file_scan\n                WHERE\n                    (status = $3 AND being_worked = false) OR (status = $4 AND work_started <= $5)\n                LIMIT 1\n                FOR    UPDATE SKIP LOCKED\n            )\n            RETURNING *"
   },
   "a303e74ab091cd6ca1f4fa502a9575d2738ac003a873631fe7a35a4988b4ff62": {
     "describe": {
@@ -105,6 +105,74 @@
       }
     },
     "query": "INSERT\n            INTO file_scan (id, file_name, file_location, file_hash, posted_on, last_updated, status, being_worked, work_started)\n            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)"
+  },
+  "b9db22d8b070b4719858998ad74a7fbbb1557ab547a9307bdfafa51d0b87007e": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "file_name",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "file_location",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "file_hash",
+          "ordinal": 3,
+          "type_info": "Text"
+        },
+        {
+          "name": "posted_on",
+          "ordinal": 4,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "last_updated",
+          "ordinal": 5,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "status",
+          "ordinal": 6,
+          "type_info": "Text"
+        },
+        {
+          "name": "being_worked",
+          "ordinal": 7,
+          "type_info": "Bool"
+        },
+        {
+          "name": "work_started",
+          "ordinal": 8,
+          "type_info": "Int8"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "SELECT\n            id,\n            file_name,\n            file_location,\n            file_hash,\n            posted_on,\n            last_updated,\n            status,\n            being_worked,\n            work_started\n          FROM file_scan\n          WHERE status = $1"
   },
   "e88ceb6a07de8f59135a41b210c57898057de16c61e1df7f5419754569b1e78e": {
     "describe": {
