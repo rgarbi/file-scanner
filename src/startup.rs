@@ -46,7 +46,7 @@ impl Application {
         let port = listener.local_addr().unwrap().port();
         let server = run(listener, connection_pool.clone(), email_client)?;
 
-        spin_up_background_tasks(&connection_pool).await;
+        spin_up_background_tasks(connection_pool.clone()).await;
 
         Ok(Self { port, server })
     }
