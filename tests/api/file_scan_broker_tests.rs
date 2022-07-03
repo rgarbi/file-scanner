@@ -102,7 +102,7 @@ async fn select_a_file_that_needs_hashing_because_it_was_abandoned_works() {
         get_unix_epoch_time_minus_minutes_as_seconds(
             MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_HASH_AGAIN,
         ) as i64
-            + 1,
+            - 5,
     );
     file_scan.being_worked = true;
 
