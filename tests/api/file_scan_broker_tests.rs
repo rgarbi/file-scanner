@@ -1,8 +1,8 @@
 use crate::helper::{generate_file_scan, spawn_app};
 use claim::{assert_err, assert_ge, assert_none, assert_ok, assert_some};
+use file_scanner::background::background_hasher::MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN;
 use file_scanner::db::file_scan_broker::{
-    insert_scan, select_a_file_that_needs_hashing, select_all_file_hashes_by_status,
-    MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_HASH_AGAIN,
+    insert_scan, select_a_file_that_needs_worked, select_all_file_hashes_by_status,
 };
 use file_scanner::domain::file_scan_model::ScanStatus;
 use file_scanner::util::{
@@ -40,7 +40,13 @@ async fn select_a_file_that_needs_hashing_works() {
     file_scan.status = ScanStatus::Pending;
     assert_ok!(insert_scan(file_scan.clone(), &app.db_pool).await);
 
-    let returned = select_a_file_that_needs_hashing(&app.db_pool).await;
+    let returned = select_a_file_that_needs_worked(
+        ScanStatus::Pending,
+        ScanStatus::Hashing,
+        MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN,
+        &app.db_pool,
+    )
+    .await;
     assert_ok!(&returned);
 
     let returned_scan = returned.unwrap();
@@ -68,7 +74,13 @@ async fn select_a_file_among_many_that_needs_hashing_works() {
         file_scan_ids.push(result.unwrap());
     }
 
-    let returned = select_a_file_that_needs_hashing(&app.db_pool).await;
+    let returned = select_a_file_that_needs_worked(
+        ScanStatus::Pending,
+        ScanStatus::Hashing,
+        MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN,
+        &app.db_pool,
+    )
+    .await;
     assert_ok!(&returned);
     let returned_scan = returned.unwrap();
     assert_some!(&returned_scan);
@@ -85,7 +97,13 @@ async fn select_a_file_among_many_that_needs_hashing_works() {
 async fn select_a_file_that_needs_hashing_does_not_find_anything() {
     let app = spawn_app(false).await;
 
-    let returned = select_a_file_that_needs_hashing(&app.db_pool).await;
+    let returned = select_a_file_that_needs_worked(
+        ScanStatus::Pending,
+        ScanStatus::Hashing,
+        MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN,
+        &app.db_pool,
+    )
+    .await;
     assert_ok!(&returned);
 
     let returned_scan = returned.unwrap();
@@ -100,7 +118,7 @@ async fn select_a_file_that_needs_hashing_because_it_was_abandoned_works() {
     file_scan.status = ScanStatus::Hashing;
     file_scan.work_started = Some(
         get_unix_epoch_time_minus_minutes_as_seconds(
-            MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_HASH_AGAIN,
+            MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN,
         ) as i64
             - 5,
     );
@@ -108,7 +126,13 @@ async fn select_a_file_that_needs_hashing_because_it_was_abandoned_works() {
 
     assert_ok!(insert_scan(file_scan.clone(), &app.db_pool).await);
 
-    let returned = select_a_file_that_needs_hashing(&app.db_pool).await;
+    let returned = select_a_file_that_needs_worked(
+        ScanStatus::Pending,
+        ScanStatus::Hashing,
+        MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN,
+        &app.db_pool,
+    )
+    .await;
     assert_ok!(&returned);
 
     let returned_scan = returned.unwrap();
@@ -128,13 +152,19 @@ async fn select_a_file_that_needs_hashing_does_not_get_a_file_still_being_worked
     let mut file_scan = generate_file_scan();
     file_scan.status = ScanStatus::Pending;
     file_scan.work_started = Some(get_unix_epoch_time_minus_minutes_as_seconds(
-        MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_HASH_AGAIN - 1,
+        MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN - 1,
     ) as i64);
     file_scan.being_worked = true;
 
     assert_ok!(insert_scan(file_scan.clone(), &app.db_pool).await);
 
-    let returned = select_a_file_that_needs_hashing(&app.db_pool).await;
+    let returned = select_a_file_that_needs_worked(
+        ScanStatus::Pending,
+        ScanStatus::Hashing,
+        MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN,
+        &app.db_pool,
+    )
+    .await;
     assert_ok!(&returned);
 
     let returned_scan = returned.unwrap();
@@ -148,13 +178,19 @@ async fn select_a_file_that_is_stuck_hashing() {
     let mut file_scan = generate_file_scan();
     file_scan.status = ScanStatus::Hashing;
     file_scan.work_started = Some(get_unix_epoch_time_minus_minutes_as_seconds(
-        MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_HASH_AGAIN + 1,
+        MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN + 1,
     ) as i64);
     file_scan.being_worked = true;
 
     assert_ok!(insert_scan(file_scan.clone(), &app.db_pool).await);
 
-    let returned = select_a_file_that_needs_hashing(&app.db_pool).await;
+    let returned = select_a_file_that_needs_worked(
+        ScanStatus::Pending,
+        ScanStatus::Hashing,
+        MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN,
+        &app.db_pool,
+    )
+    .await;
     assert_ok!(&returned);
 
     let returned_scan = returned.unwrap();

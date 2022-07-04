@@ -66,14 +66,16 @@ pub async fn select_a_file_hash_by_id(id: Uuid, pool: &PgPool) -> Result<FileSca
     })
 }
 
-pub static MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_HASH_AGAIN: i64 = 15;
-
-#[tracing::instrument(name = "Select a file that needs hashing", skip(pool))]
-pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<Option<FileScan>, Error> {
+#[tracing::instrument(name = "Select and lock a file by status", skip(pool))]
+pub async fn select_a_file_that_needs_worked(
+    current_status: ScanStatus,
+    destination_status: ScanStatus,
+    wait_period_in_minutes: i64,
+    pool: &PgPool,
+) -> Result<Option<FileScan>, Error> {
     let work_start_time = get_unix_epoch_time_as_seconds() as i64;
-    let abandoned_time = get_unix_epoch_time_minus_minutes_as_seconds(
-        MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_HASH_AGAIN,
-    ) as i64;
+    let abandoned_time =
+        get_unix_epoch_time_minus_minutes_as_seconds(wait_period_in_minutes) as i64;
     let result = sqlx::query!(
         r#"UPDATE file_scan
             SET
@@ -90,9 +92,9 @@ pub async fn select_a_file_that_needs_hashing(pool: &PgPool) -> Result<Option<Fi
             )
             RETURNING *"#,
         Some(work_start_time),
-        ScanStatus::Hashing.as_str(),
-        ScanStatus::Pending.as_str(),
-        ScanStatus::Hashing.as_str(),
+        destination_status.as_str(),
+        current_status.as_str(),
+        destination_status.as_str(),
         abandoned_time,
     )
     .fetch_optional(pool)
