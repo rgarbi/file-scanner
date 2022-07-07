@@ -7,7 +7,7 @@ pub async fn scan_files(_pg_pool: &PgPool) {
     //get a lock on a file that has been hashed but has not been scanned.
     let _get_file_result = select_a_file_that_needs_worked(
         ScanStatus::DoneHashing,
-        ScanStatus::DoneScanningClean,
+        ScanStatus::Scanning,
         MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN,
         pg_pool,
     )
