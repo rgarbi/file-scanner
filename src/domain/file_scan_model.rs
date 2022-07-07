@@ -15,6 +15,7 @@ pub struct FileScan {
     pub status: ScanStatus,
     pub being_worked: bool,
     pub work_started: Option<i64>,
+    pub scan_result: Option<ScanResult>,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
@@ -26,6 +27,12 @@ pub enum ScanStatus {
     DoneScanningClean,
     DoneScanningBadFile,
     Error,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
+pub enum ScanResult {
+    Clean,
+    BadFile,
 }
 
 impl FromStr for ScanStatus {
