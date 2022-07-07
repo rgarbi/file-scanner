@@ -88,7 +88,7 @@ pub async fn select_a_file_that_needs_worked(
                 WHERE
                     (status = $3 AND being_worked = false) OR (status = $4 AND work_started <= $5)
                 LIMIT 1
-                FOR    UPDATE SKIP LOCKED
+                FOR UPDATE SKIP LOCKED
             )
             RETURNING *"#,
         Some(work_start_time),
