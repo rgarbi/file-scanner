@@ -16,7 +16,7 @@ name = "file-scanner"
 actix-web = "4"
 actix-cors = "0.6"
 actix-web-httpauth = "0.6"
-tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "process"] }
 chrono = { version = "0.4", features = ["serde"] }
 sqlx = { version = "0.5", features = [
     "runtime-actix-rustls",
