@@ -5,6 +5,9 @@ use crate::domain::file_scan_model::{FileScan, ScanResult, ScanStatus};
 use tokio::process::Command;
 use tracing::Level;
 
+#[derive(Debug, Clone)]
+pub struct ScanProcessError;
+
 pub static MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN: i64 = 10;
 
 pub async fn scan_files(pg_pool: &PgPool) {
@@ -20,7 +23,9 @@ pub async fn scan_files(pg_pool: &PgPool) {
     match get_file_result {
         Ok(maybe_a_file_scan) => {
             if maybe_a_file_scan.is_some() {
-               scan_file(&maybe_a_file_scan.unwrap()).await
+                let _result = scan_file(&maybe_a_file_scan.unwrap()).await;
+
+
             }
         }
         Err(err) => {
@@ -32,30 +37,21 @@ pub async fn scan_files(pg_pool: &PgPool) {
     //update the record
 }
 
-pub async fn scan_file(file_scan: &FileScan) -> Result<ScanResult, Error> {
-    let command = Command::new("ls").stdout(Stdio::null());
+pub async fn scan_file(_file_scan: &FileScan) -> Result<ScanResult, ScanProcessError> {
+    let mut command = Command::new("ls");
+    command.stdout(Stdio::null());
 
-    let child_process_handle = command.spawn();
+    let child_process_handle = command.spawn()
+        .expect("ls command failed to start")
+        .wait()
+        .await
+        .expect("ls command failed to run");
 
-    match child_process_handle {
-        Ok(mut child) =>{
-            let result = child.wait().await;
-
-            match result {
-                Ok(exit_status) => {
-                    if exit_status.exit_ok().is_ok() {
-                        return Ok(ScanResult::Clean);
-                    }
-
-                    return Err(exit_status.)
-                }
-            }
-
-        },
-        Err(error) => {
-            return Err(error);
-        }
+    if child_process_handle.success() {
+        println!("command success: {}", child_process_handle);
+        Ok(ScanResult::Clean)
+    } else {
+        println!("command error: {}", child_process_handle);
+        Err(ScanProcessError)
     }
-
-    Ok(ScanResult::Clean)
 }
