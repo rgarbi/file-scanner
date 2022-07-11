@@ -25,7 +25,6 @@ pub async fn scan_files(pg_pool: &PgPool) {
             if maybe_a_file_scan.is_some() {
                 let _result = scan_file(&maybe_a_file_scan.unwrap()).await;
 
-
             }
         }
         Err(err) => {
