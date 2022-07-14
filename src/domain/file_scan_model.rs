@@ -35,6 +35,32 @@ pub enum ScanResult {
     BadFile,
 }
 
+impl FromStr for ScanResult {
+    type Err = ();
+
+    fn from_str(val: &str) -> Result<Self, Self::Err> {
+        if val.eq("Clean") {
+            return Ok(ScanResult::Clean);
+        }
+
+        if val.eq("BadFile") {
+            return Ok(ScanResult::BadFile);
+        }
+        
+        error!("Could not map string: {} to the enum SubscriptionType", val);
+        Err(())
+    }
+}
+
+impl ScanResult {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            ScanResult::Clean => "Clean",
+            ScanResult::BadFile => "BadFile",
+        }
+    }
+}
+
 impl FromStr for ScanStatus {
     type Err = ();
 
@@ -94,7 +120,7 @@ impl FileScan {
 
 #[cfg(test)]
 mod tests {
-    use crate::domain::file_scan_model::{FileScan, ScanStatus};
+    use crate::domain::file_scan_model::{FileScan, ScanResult, ScanStatus};
     use chrono::Utc;
     use claim::assert_err;
     use std::str::FromStr;
@@ -133,6 +159,20 @@ mod tests {
     }
 
     #[test]
+    fn scan_result_to_and_from_str_test() {
+        assert_eq!(
+            ScanResult::from_str("Clean").unwrap().as_str(),
+            ScanResult::Clean.as_str()
+        );
+        assert_eq!(
+            ScanResult::from_str("BadFile").unwrap().as_str(),
+            ScanResult::BadFile.as_str()
+        );
+
+        assert_err!(ScanResult::from_str(Uuid::new_v4().to_string().as_str()));
+    }
+
+    #[test]
     fn file_scan_to_json_works() {
         let file_scan = FileScan {
             id: Uuid::new_v4(),
@@ -144,6 +184,7 @@ mod tests {
             status: ScanStatus::Pending,
             being_worked: false,
             work_started: Some(0),
+            scan_result: None
         };
         let _json = file_scan.to_json();
     }
