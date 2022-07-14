@@ -1,4 +1,4 @@
-use crate::domain::file_scan_model::{FileScan, ScanStatus};
+use crate::domain::file_scan_model::{FileScan, ScanResult, ScanStatus};
 use crate::util::{get_unix_epoch_time_as_seconds, get_unix_epoch_time_minus_minutes_as_seconds};
 use sqlx::{Error, PgPool};
 use std::str::FromStr;
@@ -112,6 +112,7 @@ pub async fn select_a_file_that_needs_worked(
                 status: ScanStatus::from_str(row.status.as_str()).unwrap(),
                 being_worked: row.being_worked,
                 work_started: row.work_started,
+                scan_result: Some(ScanResult::from_str(row.scan_result.as_str()).unwrap()),
             })),
             None => Ok(None),
         },
