@@ -139,7 +139,7 @@ impl FileScan {
 mod tests {
     use crate::domain::file_scan_model::{FileScan, ScanResult, ScanStatus};
     use chrono::Utc;
-    use claim::assert_err;
+    use claim::{assert_err, assert_ge, assert_some};
     use std::str::FromStr;
     use uuid::Uuid;
 
@@ -205,5 +205,10 @@ mod tests {
             scan_result_details: None
         };
         let _json = file_scan.to_json();
+    }
+
+    #[test]
+    fn scan_result_to_from_optional() {
+        assert_some!(ScanResult::from_optional_string(Some(String::from(ScanResult::Clean.as_str()))));
     }
 }
