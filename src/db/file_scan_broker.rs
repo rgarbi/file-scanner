@@ -19,7 +19,7 @@ pub async fn insert_scan(file_scan: FileScan, pool: &PgPool) -> Result<Uuid, Err
         file_scan.status.as_str(),
         file_scan.being_worked,
         file_scan.work_started,
-        file_scan.scan_result,
+        Scan_Result::to_optional_string(file_scan.scan_result),
         file_scan.scan_result_details
     ).execute(pool)
         .await
@@ -67,7 +67,7 @@ pub async fn select_a_file_hash_by_id(id: Uuid, pool: &PgPool) -> Result<FileSca
         status: ScanStatus::from_str(result.status.as_str()).unwrap(),
         being_worked: result.being_worked,
         work_started: result.work_started,
-        scan_result: ScanResult::from_optional_str(result.scan_result),
+        scan_result: ScanResult::from_optional_string(result.scan_result),
         scan_result_details: result.scan_result_details,
     })
 }
@@ -118,7 +118,7 @@ pub async fn select_a_file_that_needs_worked(
                 status: ScanStatus::from_str(row.status.as_str()).unwrap(),
                 being_worked: row.being_worked,
                 work_started: row.work_started,
-                scan_result: ScanResult::from_optional_str(row.scan_result),
+                scan_result: ScanResult::from_optional_string(row.scan_result),
                 scan_result_details: row.scan_result_details,
             })),
             None => Ok(None),
@@ -199,7 +199,7 @@ pub async fn select_all_file_hashes_by_status(
             status: ScanStatus::from_str(row.status.as_str()).unwrap(),
             being_worked: row.being_worked,
             work_started: row.work_started,
-            scan_result: ScanResult::from_optional_str(row.scan_result),
+            scan_result: ScanResult::from_optional_string(row.scan_result),
             scan_result_details: row.scan_result_details,
         });
     }

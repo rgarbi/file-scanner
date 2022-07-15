@@ -61,9 +61,17 @@ impl ScanResult {
         }
     }
 
-    pub fn from_optional_str(value: Option<String>) -> Option<ScanResult> {
+    pub fn from_optional_string(value: Option<String>) -> Option<ScanResult> {
         if value.is_some() {
             return Some(ScanResult::from_str(value.unwrap().as_str()).unwrap());
+        }
+
+        None
+    }
+
+    pub fn to_optional_string(value: Option<ScanResult>) -> Option<String> {
+        if value.is_some() {
+            return Some(String::from(value.unwrap().as_str()));
         }
 
         None
