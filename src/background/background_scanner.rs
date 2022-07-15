@@ -26,8 +26,8 @@ pub async fn scan_files(pg_pool: &PgPool) {
                 let result = scan_file(&maybe_a_file_scan.unwrap()).await;
 
                 match result {
-                    Ok(scanResult) => {
-                        if scanResult == ScanResult::Clean {
+                    Ok(scan_result) => {
+                        if scan_result == ScanResult::Clean {
                             println!("File is clean need to save that result");
                         } else {
                             println!("File is not clean.... save the result");
