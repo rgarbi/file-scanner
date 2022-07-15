@@ -202,6 +202,7 @@ mod tests {
             being_worked: false,
             work_started: Some(0),
             scan_result: None,
+            scan_result_details: None
         };
         let _json = file_scan.to_json();
     }

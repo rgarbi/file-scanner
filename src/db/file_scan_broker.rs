@@ -19,7 +19,7 @@ pub async fn insert_scan(file_scan: FileScan, pool: &PgPool) -> Result<Uuid, Err
         file_scan.status.as_str(),
         file_scan.being_worked,
         file_scan.work_started,
-        Scan_Result::to_optional_string(file_scan.scan_result),
+        ScanResult::to_optional_string(file_scan.scan_result),
         file_scan.scan_result_details
     ).execute(pool)
         .await
