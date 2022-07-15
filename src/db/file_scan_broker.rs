@@ -8,8 +8,8 @@ use uuid::Uuid;
 pub async fn insert_scan(file_scan: FileScan, pool: &PgPool) -> Result<Uuid, Error> {
     sqlx::query!(
         r#"INSERT
-            INTO file_scan (id, file_name, file_location, file_hash, posted_on, last_updated, status, being_worked, work_started)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)"#,
+            INTO file_scan (id, file_name, file_location, file_hash, posted_on, last_updated, status, being_worked, work_started, scan_result, scan_result_details)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)"#,
         file_scan.id,
         file_scan.file_name,
         file_scan.file_location,
@@ -19,6 +19,8 @@ pub async fn insert_scan(file_scan: FileScan, pool: &PgPool) -> Result<Uuid, Err
         file_scan.status.as_str(),
         file_scan.being_worked,
         file_scan.work_started,
+        file_scan.scan_result,
+        file_scan.scan_result_details
     ).execute(pool)
         .await
         .map_err(|e: Error| {
@@ -41,17 +43,19 @@ pub async fn select_a_file_hash_by_id(id: Uuid, pool: &PgPool) -> Result<FileSca
             last_updated,
             status,
             being_worked,
-            work_started
+            work_started,
+            scan_result,
+            scan_result_details
           FROM file_scan
           WHERE id = $1"#,
         id,
     )
-    .fetch_one(pool)
-    .await
-    .map_err(|e: Error| {
-        tracing::error!("{:?}", e);
-        e
-    })?;
+        .fetch_one(pool)
+        .await
+        .map_err(|e: Error| {
+            tracing::error!("{:?}", e);
+            e
+        })?;
 
     Ok(FileScan {
         id: result.id,
@@ -63,6 +67,8 @@ pub async fn select_a_file_hash_by_id(id: Uuid, pool: &PgPool) -> Result<FileSca
         status: ScanStatus::from_str(result.status.as_str()).unwrap(),
         being_worked: result.being_worked,
         work_started: result.work_started,
+        scan_result: ScanResult::from_optional_str(result.scan_result),
+        scan_result_details: result.scan_result_details,
     })
 }
 
@@ -97,8 +103,8 @@ pub async fn select_a_file_that_needs_worked(
         destination_status.as_str(),
         abandoned_time,
     )
-    .fetch_optional(pool)
-    .await;
+        .fetch_optional(pool)
+        .await;
 
     return match result {
         Ok(res) => match res {
@@ -112,7 +118,8 @@ pub async fn select_a_file_that_needs_worked(
                 status: ScanStatus::from_str(row.status.as_str()).unwrap(),
                 being_worked: row.being_worked,
                 work_started: row.work_started,
-                scan_result: Some(ScanResult::from_str(row.scan_result.as_str()).unwrap()),
+                scan_result: ScanResult::from_optional_str(row.scan_result),
+                scan_result_details: row.scan_result_details,
             })),
             None => Ok(None),
         },
@@ -140,12 +147,12 @@ pub async fn set_a_file_scan_to_be_done_hashing(
         hash,
         id,
     )
-    .execute(pool)
-    .await
-    .map_err(|e: Error| {
-        tracing::error!("{:?}", e);
-        e
-    })?;
+        .execute(pool)
+        .await
+        .map_err(|e: Error| {
+            tracing::error!("{:?}", e);
+            e
+        })?;
 
     Ok(())
 }
@@ -165,17 +172,19 @@ pub async fn select_all_file_hashes_by_status(
             last_updated,
             status,
             being_worked,
-            work_started
+            work_started,
+            scan_result,
+            scan_result_details
           FROM file_scan
           WHERE status = $1"#,
         status.as_str(),
     )
-    .fetch_all(pool)
-    .await
-    .map_err(|e: Error| {
-        tracing::error!("{:?}", e);
-        e
-    })?;
+        .fetch_all(pool)
+        .await
+        .map_err(|e: Error| {
+            tracing::error!("{:?}", e);
+            e
+        })?;
 
     let mut file_scans: Vec<FileScan> = Vec::new();
 
@@ -190,6 +199,8 @@ pub async fn select_all_file_hashes_by_status(
             status: ScanStatus::from_str(row.status.as_str()).unwrap(),
             being_worked: row.being_worked,
             work_started: row.work_started,
+            scan_result: ScanResult::from_optional_str(row.scan_result),
+            scan_result_details: row.scan_result_details,
         });
     }
 

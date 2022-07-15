@@ -16,6 +16,7 @@ pub struct FileScan {
     pub being_worked: bool,
     pub work_started: Option<i64>,
     pub scan_result: Option<ScanResult>,
+    pub scan_result_details: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
@@ -46,7 +47,7 @@ impl FromStr for ScanResult {
         if val.eq("BadFile") {
             return Ok(ScanResult::BadFile);
         }
-        
+
         error!("Could not map string: {} to the enum SubscriptionType", val);
         Err(())
     }
@@ -58,6 +59,14 @@ impl ScanResult {
             ScanResult::Clean => "Clean",
             ScanResult::BadFile => "BadFile",
         }
+    }
+
+    pub fn from_optional_str(value: Option<String>) -> Option<ScanResult> {
+        if value.is_some() {
+            return Some(ScanResult::from_str(value.unwrap().as_str()).unwrap());
+        }
+
+        None
     }
 }
 
@@ -184,7 +193,7 @@ mod tests {
             status: ScanStatus::Pending,
             being_worked: false,
             work_started: Some(0),
-            scan_result: None
+            scan_result: None,
         };
         let _json = file_scan.to_json();
     }
