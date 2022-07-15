@@ -139,7 +139,7 @@ impl FileScan {
 mod tests {
     use crate::domain::file_scan_model::{FileScan, ScanResult, ScanStatus};
     use chrono::Utc;
-    use claim::{assert_err, assert_ge, assert_some};
+    use claim::{assert_err, assert_none, assert_some};
     use std::str::FromStr;
     use uuid::Uuid;
 
@@ -210,5 +210,8 @@ mod tests {
     #[test]
     fn scan_result_to_from_optional() {
         assert_some!(ScanResult::from_optional_string(Some(String::from(ScanResult::Clean.as_str()))));
+        assert_some!(ScanResult::from_optional_string(Some(String::from(ScanResult::BadFile.as_str()))));
+        assert_none!(ScanResult::from_optional_string(None));
+        assert_none!(ScanResult::from_optional_string(Some(Uuid::new_v4().to_string())));
     }
 }
