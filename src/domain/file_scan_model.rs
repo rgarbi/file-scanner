@@ -63,7 +63,13 @@ impl ScanResult {
 
     pub fn from_optional_string(value: Option<String>) -> Option<ScanResult> {
         if value.is_some() {
-            return Some(ScanResult::from_str(value.unwrap().as_str()).unwrap());
+            let result = ScanResult::from_str(value.unwrap().as_str());
+            return match result {
+                Ok(scan_result) => {
+                    Some(scan_result)
+                },
+                Err(_) => None
+            }
         }
 
         None
@@ -213,5 +219,9 @@ mod tests {
         assert_some!(ScanResult::from_optional_string(Some(String::from(ScanResult::BadFile.as_str()))));
         assert_none!(ScanResult::from_optional_string(None));
         assert_none!(ScanResult::from_optional_string(Some(Uuid::new_v4().to_string())));
+
+        assert_some!(ScanResult::to_optional_string(Some(ScanResult::Clean)));
+        assert_some!(ScanResult::to_optional_string(Some(ScanResult::BadFile)));
+        assert_none!(ScanResult::to_optional_string(None));
     }
 }
