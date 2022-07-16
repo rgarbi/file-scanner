@@ -104,6 +104,8 @@ pub fn generate_file_scan() -> FileScan {
         status: ScanStatus::Pending,
         being_worked: false,
         work_started: None,
+        scan_result: None,
+        scan_result_details: None
     }
 }
 
