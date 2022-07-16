@@ -43,7 +43,7 @@ pub async fn scan_files(pg_pool: &PgPool) {
             tracing::event!(Level::ERROR, "Err: {:?}", err);
         }
     }
-    todo!("We need to handle errors and retries... Also... we need to handle when we are done scanning and it was a bad file!")
+    //We need to handle errors and retries... Also... we need to handle when we are done scanning and it was a bad file!
     //scan the file.
     //update the record
 }

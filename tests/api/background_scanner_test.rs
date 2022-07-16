@@ -1,5 +1,5 @@
 use crate::helper::{send_file, spawn_app, TestApp};
-use claim::{assert_err, assert_ok};
+use claim::{assert_ok};
 use file_scanner::background::background_hasher::hash_files;
 use file_scanner::background::background_scanner::scan_files;
 use file_scanner::db::file_scan_broker::select_a_file_hash_by_id;
