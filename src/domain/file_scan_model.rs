@@ -62,7 +62,7 @@ impl ScanResult {
     }
 
     pub fn from_optional_string(value: Option<String>) -> Option<ScanResult> {
-        if value.is_some() {
+        if let Some(..) = value {
             let result = ScanResult::from_str(value.unwrap().as_str());
             return match result {
                 Ok(scan_result) => Some(scan_result),
@@ -74,7 +74,7 @@ impl ScanResult {
     }
 
     pub fn to_optional_string(value: Option<ScanResult>) -> Option<String> {
-        if value.is_some() {
+        if let Some(..) = value {
             return Some(String::from(value.unwrap().as_str()));
         }
 
