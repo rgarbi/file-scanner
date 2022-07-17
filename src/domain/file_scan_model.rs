@@ -65,11 +65,9 @@ impl ScanResult {
         if value.is_some() {
             let result = ScanResult::from_str(value.unwrap().as_str());
             return match result {
-                Ok(scan_result) => {
-                    Some(scan_result)
-                },
-                Err(_) => None
-            }
+                Ok(scan_result) => Some(scan_result),
+                Err(_) => None,
+            };
         }
 
         None
@@ -208,17 +206,23 @@ mod tests {
             being_worked: false,
             work_started: Some(0),
             scan_result: None,
-            scan_result_details: None
+            scan_result_details: None,
         };
         let _json = file_scan.to_json();
     }
 
     #[test]
     fn scan_result_to_from_optional() {
-        assert_some!(ScanResult::from_optional_string(Some(String::from(ScanResult::Clean.as_str()))));
-        assert_some!(ScanResult::from_optional_string(Some(String::from(ScanResult::BadFile.as_str()))));
+        assert_some!(ScanResult::from_optional_string(Some(String::from(
+            ScanResult::Clean.as_str()
+        ))));
+        assert_some!(ScanResult::from_optional_string(Some(String::from(
+            ScanResult::BadFile.as_str()
+        ))));
         assert_none!(ScanResult::from_optional_string(None));
-        assert_none!(ScanResult::from_optional_string(Some(Uuid::new_v4().to_string())));
+        assert_none!(ScanResult::from_optional_string(Some(
+            Uuid::new_v4().to_string()
+        )));
 
         assert_some!(ScanResult::to_optional_string(Some(ScanResult::Clean)));
         assert_some!(ScanResult::to_optional_string(Some(ScanResult::BadFile)));

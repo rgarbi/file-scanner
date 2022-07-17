@@ -1,5 +1,5 @@
 use crate::helper::{send_file, spawn_app, TestApp};
-use claim::{assert_ok};
+use claim::assert_ok;
 use file_scanner::background::background_hasher::hash_files;
 use file_scanner::background::background_scanner::scan_files;
 use file_scanner::db::file_scan_broker::select_a_file_hash_by_id;
@@ -13,7 +13,6 @@ async fn scan_files_works() {
 
     scan_files(&app.db_pool).await;
 }
-
 
 pub async fn get_a_file_ready_for_scanning(app: &TestApp) {
     let file_scan_stored = send_file(&app).await;

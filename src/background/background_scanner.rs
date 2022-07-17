@@ -1,7 +1,7 @@
-use std::process::Stdio;
-use sqlx::PgPool;
 use crate::db::file_scan_broker::select_a_file_that_needs_worked;
 use crate::domain::file_scan_model::{FileScan, ScanResult, ScanStatus};
+use sqlx::PgPool;
+use std::process::Stdio;
 use tokio::process::Command;
 use tracing::Level;
 
@@ -18,7 +18,7 @@ pub async fn scan_files(pg_pool: &PgPool) {
         MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN,
         pg_pool,
     )
-        .await;
+    .await;
 
     match get_file_result {
         Ok(maybe_a_file_scan) => {
@@ -52,7 +52,8 @@ pub async fn scan_file(_file_scan: &FileScan) -> Result<ScanResult, ScanProcessE
     let mut command = Command::new("ls");
     command.stdout(Stdio::null());
 
-    let child_process_handle = command.spawn()
+    let child_process_handle = command
+        .spawn()
         .expect("ls command failed to start")
         .wait()
         .await

@@ -33,7 +33,7 @@ pub async fn scan_file(mut payload: web::Payload, pool: web::Data<PgPool>) -> im
         being_worked: false,
         work_started: Some(0),
         scan_result: None,
-        scan_result_details: None
+        scan_result_details: None,
     };
 
     return match insert_scan(file_scan.clone(), &pool).await {

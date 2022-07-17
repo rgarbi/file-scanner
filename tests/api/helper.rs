@@ -105,7 +105,7 @@ pub fn generate_file_scan() -> FileScan {
         being_worked: false,
         work_started: None,
         scan_result: None,
-        scan_result_details: None
+        scan_result_details: None,
     }
 }
 

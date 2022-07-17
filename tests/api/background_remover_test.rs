@@ -1,5 +1,5 @@
-use file_scanner::background::background_remover::remove_files;
 use crate::helper::{send_file, spawn_app};
+use file_scanner::background::background_remover::remove_files;
 use file_scanner::domain::file_scan_model::ScanStatus;
 
 #[tokio::test]
