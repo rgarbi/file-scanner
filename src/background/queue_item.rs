@@ -1,11 +1,10 @@
-use chrono::{DateTime, Utc};
+use chrono::{Utc};
 use serde::{Deserialize, Serialize};
-use std::str::FromStr;
-use tracing::error;
+
 use uuid::Uuid;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct FileScan {
+pub struct QueueItem {
     pub id: Uuid,
     pub queue_item_type: String,
     pub queue_item: String,
