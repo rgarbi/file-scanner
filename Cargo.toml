@@ -15,7 +15,7 @@ name = "file-scanner"
 [dependencies]
 actix-web = "4"
 actix-cors = "0.6"
-actix-web-httpauth = "0.6"
+actix-web-httpauth = "0.8"
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "process"] }
 chrono = { version = "0.4", features = ["serde"] }
 sqlx = { version = "0.6", features = [
@@ -39,7 +39,7 @@ tracing-log = "0.1"
 secrecy = { version = "0.8", features = ["serde"] }
 tracing-actix-web = "0.6"
 unicode-segmentation = "1"
-validator = "0.15"
+validator = "0.16"
 base64 = "0.13.0"
 anyhow = "1"
 derive_more = "0.99"
