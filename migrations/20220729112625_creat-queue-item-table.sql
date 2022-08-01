@@ -1,5 +1,3 @@
--- Add migration script here
--- Add migration script here
 CREATE TABLE queue_items(
     id uuid NOT NULL,
     PRIMARY KEY (id),
