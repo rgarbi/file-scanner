@@ -1,7 +1,7 @@
 use crate::domain::file_scan_model::{FileScan, ScanResult, ScanStatus};
-use crate::util::{get_unix_epoch_time_as_seconds, get_unix_epoch_time_minus_minutes_as_seconds};
+use crate::util::get_unix_epoch_time_minus_minutes_as_seconds;
 use sqlx::{Error, PgPool};
-use std::str::FromStr;
+
 use uuid::Uuid;
 use crate::background::queue_item::QueueItem;
 
@@ -17,7 +17,7 @@ pub async fn store(queue_item: QueueItem, pool: &PgPool) -> Result<Uuid, Error> 
         queue_item.work_started,
         queue_item.being_worked,
         queue_item.error_count,
-        queue_item.error_message.as_str(),
+        queue_item.error_message,
     ).execute(pool)
         .await
         .map_err(|e: Error| {
