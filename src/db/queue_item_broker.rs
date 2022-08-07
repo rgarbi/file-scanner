@@ -1,7 +1,4 @@
-use crate::domain::file_scan_model::{FileScan, ScanResult, ScanStatus};
-use crate::util::get_unix_epoch_time_minus_minutes_as_seconds;
 use sqlx::{Error, PgPool};
-
 use uuid::Uuid;
 use crate::background::queue_item::QueueItem;
 
