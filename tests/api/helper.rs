@@ -1,3 +1,4 @@
+use std::any::Any;
 use chrono::Utc;
 use once_cell::sync::Lazy;
 use reqwest::Response;
@@ -5,6 +6,7 @@ use sqlx::postgres::PgPoolOptions;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 use uuid::Uuid;
 use wiremock::MockServer;
+use file_scanner::background::queue_item::QueueItem;
 
 use file_scanner::configuration::{get_configuration, DatabaseSettings};
 use file_scanner::domain::file_scan_model::{FileScan, ScanStatus};
@@ -82,7 +84,7 @@ pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
         .expect("Failed to create database.");
     // Migrate database
     let connection_pool = PgPoolOptions::new()
-        .connect_timeout(std::time::Duration::from_secs(30))
+        .acquire_timeout(std::time::Duration::from_secs(30))
         .connect_with(config.with_db())
         .await
         .expect("Failed to connect to Postgres.");
@@ -106,6 +108,18 @@ pub fn generate_file_scan() -> FileScan {
         work_started: None,
         scan_result: None,
         scan_result_details: None,
+    }
+}
+
+pub fn generate_queue_item() -> QueueItem {
+    QueueItem {
+        id: Default::default(),
+        queue_item_type: "item type".to_string(),
+        queue_item_contents: generate_file_scan().to_json(),
+        work_started: None,
+        being_worked: false,
+        error_count: 0,
+        error_message: None
     }
 }
 
