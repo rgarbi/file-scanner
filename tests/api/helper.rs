@@ -115,7 +115,7 @@ pub fn generate_queue_item() -> QueueItem {
         id: Default::default(),
         queue_item_type: "item type".to_string(),
         queue_item_contents: generate_file_scan().to_json(),
-        work_started: None,
+        work_started: Some(0),
         being_worked: false,
         error_count: 0,
         error_message: None
