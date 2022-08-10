@@ -1,8 +1,7 @@
 use crate::helper::{generate_queue_item, spawn_app};
-use db::queue_item_broker::store;
 use claim::{assert_err, assert_ok};
+use db::queue_item_broker::store;
 use file_scanner::db;
-
 
 #[tokio::test]
 async fn insert_scan_works() {

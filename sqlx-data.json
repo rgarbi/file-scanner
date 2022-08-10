@@ -186,6 +186,24 @@
     },
     "query": "INSERT\n            INTO file_scan (id, file_name, file_location, file_hash, posted_on, last_updated, status, being_worked, work_started, scan_result, scan_result_details)\n            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)"
   },
+  "7bc6dff3f0c1bd502aa0d47d1af337d0f1915303bd0face77b6041621949dff3": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Uuid",
+          "Text",
+          "Text",
+          "Int8",
+          "Bool",
+          "Int4",
+          "Text"
+        ]
+      }
+    },
+    "query": "INSERT\n            INTO queue_items (id, queue_item_type, queue_item_contents, work_started, being_worked, error_count, error_message)\n            VALUES ($1, $2, $3, $4, $5, $6, $7)"
+  },
   "a303e74ab091cd6ca1f4fa502a9575d2738ac003a873631fe7a35a4988b4ff62": {
     "describe": {
       "columns": [],

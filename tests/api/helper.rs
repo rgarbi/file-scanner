@@ -1,11 +1,11 @@
 use chrono::Utc;
+use file_scanner::background::queue_item::QueueItem;
 use once_cell::sync::Lazy;
 use reqwest::Response;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 use uuid::Uuid;
 use wiremock::MockServer;
-use file_scanner::background::queue_item::QueueItem;
 
 use file_scanner::configuration::{get_configuration, DatabaseSettings};
 use file_scanner::domain::file_scan_model::{FileScan, ScanStatus};
@@ -118,7 +118,7 @@ pub fn generate_queue_item() -> QueueItem {
         work_started: Some(0),
         being_worked: false,
         error_count: 0,
-        error_message: None
+        error_message: None,
     }
 }
 

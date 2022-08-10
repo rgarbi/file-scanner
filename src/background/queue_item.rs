@@ -12,5 +12,3 @@ pub struct QueueItem {
     pub error_count: i32,
     pub error_message: Option<String>,
 }
-
-

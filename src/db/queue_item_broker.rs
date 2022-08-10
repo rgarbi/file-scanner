@@ -1,6 +1,6 @@
+use crate::background::queue_item::QueueItem;
 use sqlx::{Error, PgPool};
 use uuid::Uuid;
-use crate::background::queue_item::QueueItem;
 
 #[tracing::instrument(name = "Saving new file scan", skip(queue_item, pool))]
 pub async fn store(queue_item: QueueItem, pool: &PgPool) -> Result<Uuid, Error> {
