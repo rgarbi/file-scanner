@@ -297,5 +297,62 @@
       }
     },
     "query": "SELECT\n            id,\n            file_name,\n            file_location,\n            file_hash,\n            posted_on,\n            last_updated,\n            status,\n            being_worked,\n            work_started,\n            scan_result,\n            scan_result_details\n          FROM file_scan\n          WHERE id = $1"
+  },
+  "d1fb474cdf2c7352da0a23b9f223359d4244337553904ee0be97f99922126ceb": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "queue_item_type",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "queue_item_contents",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "work_started",
+          "ordinal": 3,
+          "type_info": "Int8"
+        },
+        {
+          "name": "being_worked",
+          "ordinal": 4,
+          "type_info": "Bool"
+        },
+        {
+          "name": "error_count",
+          "ordinal": 5,
+          "type_info": "Int4"
+        },
+        {
+          "name": "error_message",
+          "ordinal": 6,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8"
+        ]
+      }
+    },
+    "query": "UPDATE queue_items\n            SET\n                being_worked = true,\n                work_started = $1\n            WHERE id = (\n                SELECT id\n                FROM queue_items\n                WHERE (being_worked = false) OR (work_started <= $2)\n                LIMIT 1\n                FOR UPDATE SKIP LOCKED\n            )\n            RETURNING *"
   }
 }

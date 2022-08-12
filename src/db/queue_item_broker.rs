@@ -1,7 +1,7 @@
 use crate::background::queue_item::QueueItem;
+use crate::util::{get_unix_epoch_time_as_seconds, get_unix_epoch_time_minus_minutes_as_seconds};
 use sqlx::{Error, PgPool};
 use uuid::Uuid;
-use crate::util::{get_unix_epoch_time_as_seconds, get_unix_epoch_time_minus_minutes_as_seconds};
 
 #[tracing::instrument(name = "Saving new file scan", skip(queue_item, pool))]
 pub async fn store(queue_item: QueueItem, pool: &PgPool) -> Result<Uuid, Error> {
@@ -50,8 +50,8 @@ pub async fn get_item_that_needs_worked(
         Some(work_start_time),
         abandoned_time,
     )
-        .fetch_optional(pool)
-        .await;
+    .fetch_optional(pool)
+    .await;
 
     return match result {
         Ok(res) => match res {
@@ -72,4 +72,3 @@ pub async fn get_item_that_needs_worked(
         }
     };
 }
-
