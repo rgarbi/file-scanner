@@ -1,5 +1,5 @@
 use crate::helper::{generate_queue_item, spawn_app};
-use claim::{assert_err, assert_ok, assert_some};
+use claim::{assert_err, assert_none, assert_ok, assert_some};
 use db::queue_item_broker::store;
 use file_scanner::db;
 use file_scanner::db::queue_item_broker::get_item_that_needs_worked;
@@ -37,4 +37,20 @@ async fn get_queue_item_works() {
     assert_ok!(&get_item_result);
 
     assert_some!(get_item_result.unwrap());
+}
+
+#[tokio::test]
+async fn get_queue_item_two_times_works() {
+    let app = spawn_app(false).await;
+
+    let queue_item = generate_queue_item();
+    assert_ok!(store(queue_item, &app.db_pool).await);
+
+    let get_item_result = get_item_that_needs_worked(10, &app.db_pool).await;
+    assert_ok!(&get_item_result);
+    assert_some!(get_item_result.unwrap());
+
+    let get_item_result_2 = get_item_that_needs_worked(10, &app.db_pool).await;
+    assert_ok!(&get_item_result_2);
+    assert_none!(get_item_result_2.unwrap());
 }
