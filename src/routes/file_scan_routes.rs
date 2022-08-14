@@ -36,8 +36,8 @@ pub async fn scan_file(mut payload: web::Payload, pool: web::Data<PgPool>) -> im
         scan_result_details: None,
     };
 
-    return match insert_scan(file_scan.clone(), &pool).await {
+    match insert_scan(file_scan.clone(), &pool).await {
         Ok(_) => HttpResponse::Ok().json(file_scan.clone()),
         Err(_) => HttpResponse::InternalServerError().finish(),
-    };
+    }
 }

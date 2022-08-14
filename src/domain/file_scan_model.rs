@@ -19,7 +19,7 @@ pub struct FileScan {
     pub scan_result_details: Option<String>,
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub enum ScanStatus {
     Pending,
     Hashing,
@@ -30,7 +30,7 @@ pub enum ScanStatus {
     Error,
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 pub enum ScanResult {
     Clean,
     BadFile,
