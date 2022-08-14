@@ -50,8 +50,8 @@ pub async fn get_item_that_needs_worked(
         Some(work_start_time),
         abandoned_time,
     )
-        .fetch_optional(pool)
-        .await;
+    .fetch_optional(pool)
+    .await;
 
     match result {
         Ok(res) => match res {
