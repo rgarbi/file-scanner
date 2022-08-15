@@ -4,11 +4,10 @@ use sqlx::PgPool;
 use std::process::Stdio;
 use tokio::process::Command;
 use tracing::Level;
+use crate::background::MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN;
 
 #[derive(Debug, Clone)]
 pub struct ScanProcessError;
-
-pub static MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN: i64 = 10;
 
 pub async fn scan_files(pg_pool: &PgPool) {
     //get a lock on a file that has been hashed but has not been scanned.

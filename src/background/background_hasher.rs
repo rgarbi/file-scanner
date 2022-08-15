@@ -8,8 +8,7 @@ use sqlx::PgPool;
 use tokio::fs::File;
 use tokio::io::AsyncReadExt;
 use tracing::Level;
-
-pub static MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN: i64 = 15;
+use crate::background::MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN;
 
 pub async fn hash_files(pg_pool: &PgPool) {
     //get a lock on a file that has been posted but has not been hashed.

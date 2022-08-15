@@ -33,10 +33,27 @@ async fn get_queue_item_works() {
     let queue_item = generate_queue_item();
     assert_ok!(store(queue_item, &app.db_pool).await);
 
-    let get_item_result = get_item_that_needs_worked(10, &app.db_pool).await;
+    let get_item_result = get_item_that_needs_worked(&app.db_pool).await;
     assert_ok!(&get_item_result);
 
     assert_some!(get_item_result.unwrap());
+}
+
+#[tokio::test]
+async fn get_queue_item_blows_up() {
+    let app = spawn_app(false).await;
+
+    let queue_item = generate_queue_item();
+    assert_ok!(store(queue_item, &app.db_pool).await);
+
+    // Sabotage the database
+    sqlx::query!("ALTER TABLE queue_items DROP COLUMN queue_item_contents;",)
+        .execute(&app.db_pool)
+        .await
+        .unwrap();
+
+    let get_item_result = get_item_that_needs_worked(&app.db_pool).await;
+    assert_err!(&get_item_result);
 }
 
 #[tokio::test]
@@ -46,11 +63,11 @@ async fn get_queue_item_two_times_works() {
     let queue_item = generate_queue_item();
     assert_ok!(store(queue_item, &app.db_pool).await);
 
-    let get_item_result = get_item_that_needs_worked(10, &app.db_pool).await;
+    let get_item_result = get_item_that_needs_worked(&app.db_pool).await;
     assert_ok!(&get_item_result);
     assert_some!(get_item_result.unwrap());
 
-    let get_item_result_2 = get_item_that_needs_worked(10, &app.db_pool).await;
+    let get_item_result_2 = get_item_that_needs_worked(&app.db_pool).await;
     assert_ok!(&get_item_result_2);
     assert_none!(get_item_result_2.unwrap());
 }

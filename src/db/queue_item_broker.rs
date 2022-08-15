@@ -2,6 +2,7 @@ use crate::background::queue_item::QueueItem;
 use crate::util::{get_unix_epoch_time_as_seconds, get_unix_epoch_time_minus_minutes_as_seconds};
 use sqlx::{Error, PgPool};
 use uuid::Uuid;
+use crate::background::MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN;
 
 #[tracing::instrument(name = "Saving new file scan", skip(queue_item, pool))]
 pub async fn store(queue_item: QueueItem, pool: &PgPool) -> Result<Uuid, Error> {
@@ -28,12 +29,11 @@ pub async fn store(queue_item: QueueItem, pool: &PgPool) -> Result<Uuid, Error> 
 
 #[tracing::instrument(name = "Select and lock a file by status", skip(pool))]
 pub async fn get_item_that_needs_worked(
-    wait_period_in_minutes: i64,
     pool: &PgPool,
 ) -> Result<Option<QueueItem>, Error> {
     let work_start_time = get_unix_epoch_time_as_seconds() as i64;
     let abandoned_time =
-        get_unix_epoch_time_minus_minutes_as_seconds(wait_period_in_minutes) as i64;
+        get_unix_epoch_time_minus_minutes_as_seconds(MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN) as i64;
     let result = sqlx::query!(
         r#"UPDATE queue_items
             SET
@@ -50,8 +50,8 @@ pub async fn get_item_that_needs_worked(
         Some(work_start_time),
         abandoned_time,
     )
-    .fetch_optional(pool)
-    .await;
+        .fetch_optional(pool)
+        .await;
 
     match result {
         Ok(res) => match res {
