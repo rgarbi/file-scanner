@@ -1,3 +1,4 @@
+use crate::background::MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN;
 use crate::db::file_scan_broker::{
     select_a_file_that_needs_worked, set_a_file_scan_to_be_done_hashing,
 };
@@ -8,7 +9,6 @@ use sqlx::PgPool;
 use tokio::fs::File;
 use tokio::io::AsyncReadExt;
 use tracing::Level;
-use crate::background::MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN;
 
 pub async fn hash_files(pg_pool: &PgPool) {
     //get a lock on a file that has been posted but has not been hashed.

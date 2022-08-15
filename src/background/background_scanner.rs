@@ -1,10 +1,10 @@
+use crate::background::MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN;
 use crate::db::file_scan_broker::select_a_file_that_needs_worked;
 use crate::domain::file_scan_model::{FileScan, ScanResult, ScanStatus};
 use sqlx::PgPool;
 use std::process::Stdio;
 use tokio::process::Command;
 use tracing::Level;
-use crate::background::MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN;
 
 #[derive(Debug, Clone)]
 pub struct ScanProcessError;
