@@ -1,6 +1,6 @@
 use crate::helper::{generate_file_scan, spawn_app};
 use claim::{assert_err, assert_ge, assert_none, assert_ok, assert_some};
-use file_scanner::background::background_hasher::MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN;
+use file_scanner::background::MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN;
 use file_scanner::db::file_scan_broker::{
     insert_scan, select_a_file_that_needs_worked, select_all_file_hashes_by_status,
 };

@@ -80,7 +80,9 @@ async fn get_queue_item_that_is_expired_works() {
 
     let mut queue_item = generate_queue_item();
     queue_item.being_worked = true;
-    queue_item.work_started = Some(get_unix_epoch_time_minus_minutes_as_seconds(MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN + 10) as i64);
+    queue_item.work_started = Some(get_unix_epoch_time_minus_minutes_as_seconds(
+        MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN + 10,
+    ) as i64);
     assert_ok!(store(queue_item, &app.db_pool).await);
 
     let get_item_result = get_item_that_needs_worked(&app.db_pool).await;
