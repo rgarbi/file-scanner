@@ -1,8 +1,10 @@
 use crate::helper::{generate_queue_item, spawn_app};
 use claim::{assert_err, assert_none, assert_ok, assert_some};
 use db::queue_item_broker::store;
+use file_scanner::background::MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN;
 use file_scanner::db;
 use file_scanner::db::queue_item_broker::get_item_that_needs_worked;
+use file_scanner::util::get_unix_epoch_time_minus_minutes_as_seconds;
 
 #[tokio::test]
 async fn insert_queue_item_works() {
@@ -70,4 +72,19 @@ async fn get_queue_item_two_times_works() {
     let get_item_result_2 = get_item_that_needs_worked(&app.db_pool).await;
     assert_ok!(&get_item_result_2);
     assert_none!(get_item_result_2.unwrap());
+}
+
+#[tokio::test]
+async fn get_queue_item_that_is_expired_works() {
+    let app = spawn_app(false).await;
+
+    let mut queue_item = generate_queue_item();
+    queue_item.being_worked = true;
+    queue_item.work_started = Some(get_unix_epoch_time_minus_minutes_as_seconds(MINUTES_TO_WAIT_BEFORE_ATTEMPTING_TO_WORK_AGAIN + 10) as i64);
+    assert_ok!(store(queue_item, &app.db_pool).await);
+
+    let get_item_result = get_item_that_needs_worked(&app.db_pool).await;
+    assert_ok!(&get_item_result);
+
+    assert_some!(get_item_result.unwrap());
 }
