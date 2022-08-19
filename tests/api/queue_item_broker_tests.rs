@@ -104,7 +104,6 @@ async fn put_queue_item_back_works() {
 
     assert_ok!(put_item_back(queue_item, &app.db_pool).await);
 
-
     let get_item_result_again = get_item_that_needs_worked(&app.db_pool).await;
     assert_ok!(&get_item_result_again);
 
@@ -112,7 +111,6 @@ async fn put_queue_item_back_works() {
     assert_some!(&item);
 
     assert_eq!(1, item.unwrap().error_count)
-
 }
 
 #[tokio::test]
@@ -133,5 +131,4 @@ async fn put_queue_item_back_errors() {
         .unwrap();
 
     assert_err!(put_item_back(queue_item, &app.db_pool).await);
-
 }

@@ -164,6 +164,18 @@
     },
     "query": "UPDATE file_scan\n            SET\n                being_worked = true,\n                work_started = $1,\n                status = $2\n            WHERE id = (\n                SELECT id\n                FROM file_scan\n                WHERE\n                    (status = $3 AND being_worked = false) OR (status = $4 AND work_started <= $5)\n                LIMIT 1\n                FOR UPDATE SKIP LOCKED\n            )\n            RETURNING *"
   },
+  "5d76fdd74c9eb93523756a4a2cce2e345ae2e81acd8b7e7d669e0caf9381e972": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Uuid"
+        ]
+      }
+    },
+    "query": "UPDATE queue_items\n            SET\n                being_worked = false,\n                error_count = error_count + 1\n            WHERE id = $1"
+  },
   "5de9dd6012a9e86aec921e79525b7202449ae9ac6b7b0d027e929274684b5163": {
     "describe": {
       "columns": [],
