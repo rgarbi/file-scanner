@@ -114,3 +114,24 @@ async fn put_queue_item_back_works() {
     assert_eq!(1, item.unwrap().error_count)
 
 }
+
+#[tokio::test]
+async fn put_queue_item_back_errors() {
+    let app = spawn_app(false).await;
+
+    let queue_item = generate_queue_item();
+    assert_ok!(store(queue_item.clone(), &app.db_pool).await);
+
+    let get_item_result = get_item_that_needs_worked(&app.db_pool).await;
+    assert_ok!(&get_item_result);
+    assert_some!(get_item_result.unwrap());
+
+    // Sabotage the database
+    sqlx::query!("ALTER TABLE queue_items DROP COLUMN queue_item_contents;",)
+        .execute(&app.db_pool)
+        .await
+        .unwrap();
+
+    assert_err!(put_item_back(queue_item, &app.db_pool).await);
+
+}
