@@ -127,7 +127,7 @@ async fn put_queue_item_back_errors() {
     assert_some!(get_item_result.unwrap());
 
     // Sabotage the database
-    sqlx::query!("ALTER TABLE queue_items DROP COLUMN queue_item_contents;",)
+    sqlx::query!("ALTER TABLE queue_items DROP COLUMN error_count;",)
         .execute(&app.db_pool)
         .await
         .unwrap();
