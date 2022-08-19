@@ -49,8 +49,8 @@ pub async fn get_item_that_needs_worked(pool: &PgPool) -> Result<Option<QueueIte
         Some(work_start_time),
         abandoned_time,
     )
-    .fetch_optional(pool)
-    .await;
+        .fetch_optional(pool)
+        .await;
 
     match result {
         Ok(res) => match res {
@@ -70,4 +70,24 @@ pub async fn get_item_that_needs_worked(pool: &PgPool) -> Result<Option<QueueIte
             Err(e)
         }
     }
+}
+
+
+#[tracing::instrument(name = "Put item back and indicate the worker failed to process", skip(pool))]
+pub async fn put_item_back(queue_item: QueueItem, pool: &PgPool) -> Result<Uuid, Error> {
+    sqlx::query!(
+        r#"UPDATE queue_items
+            SET
+                being_worked = false,
+                error_count = error_count + 1
+            WHERE id = $1"#,
+        queue_item.id,
+    ).execute(pool)
+        .await
+        .map_err(|e: Error| {
+            tracing::error!("{:?}", e);
+            e
+        })?;
+
+    Ok(queue_item.id)
 }
